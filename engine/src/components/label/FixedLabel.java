@@ -4,18 +4,18 @@ public enum FixedLabel implements Label {
 
     EXIT {
         @Override
-        public String getLabel() {
+        public String getStringLabel() {
             return "EXIT";
         }
     },
 
     EMPTY {
         @Override
-        public String getLabel() {
+        public String getStringLabel() {
             return "";
         }
     };
 
     @Override
-    public abstract String getLabel();
+    public abstract String getStringLabel();
 }

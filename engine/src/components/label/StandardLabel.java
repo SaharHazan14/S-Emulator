@@ -8,7 +8,7 @@ public class StandardLabel implements Label {
     }
 
     @Override
-    public String getLabel() {
+    public String getStringLabel() {
         return label;
     }
 }
