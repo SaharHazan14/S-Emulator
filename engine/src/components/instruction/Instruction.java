@@ -9,4 +9,5 @@ public interface Instruction {
     int getCyclesNumber();
     Label getLabel();
     Variable getVariable();
+    String getStringInstruction();
 }

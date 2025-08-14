@@ -38,4 +38,9 @@ public abstract class AbstractInstruction implements Instruction {
     public Variable getVariable() {
         return variable;
     }
+
+    public String getInstructionDisplay(String command) {
+        return String.format("(%c) [ %-3s ] %s (%d)",
+                instructionSemantic.getInstructionTypeChar(), label.getStringLabel(), command, instructionSemantic.getCyclesNumber());
+    }
 }

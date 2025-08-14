@@ -31,4 +31,12 @@ public enum InstructionSemantic {
     public InstructionType getInstructionType() {
         return instructionType;
     }
+
+    public char getInstructionTypeChar() {
+        return switch (instructionType)
+        {
+            case BASIC -> 'B';
+            case SYNTHETIC -> 'S';
+        };
+    }
 }
