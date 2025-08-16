@@ -7,12 +7,22 @@ public enum FixedLabel implements Label {
         public String getStringLabel() {
             return "EXIT";
         }
+
+        @Override
+        public int getSerialNumber() {
+            return 100;
+        }
     },
 
     EMPTY {
         @Override
         public String getStringLabel() {
             return "";
+        }
+
+        @Override
+        public int getSerialNumber() {
+            return 0;
         }
     };
 

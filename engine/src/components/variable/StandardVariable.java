@@ -20,4 +20,14 @@ public class StandardVariable implements Variable {
             case OUTPUT -> "y";
         };
     }
+
+    @Override
+    public VariableType getVariableType() {
+        return variableType;
+    }
+
+    @Override
+    public int getSerialNumber() {
+        return serialNumber;
+    }
 }

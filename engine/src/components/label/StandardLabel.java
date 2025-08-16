@@ -11,4 +11,9 @@ public class StandardLabel implements Label {
     public String getStringLabel() {
         return label;
     }
+
+    @Override
+    public int getSerialNumber() {
+        return Integer.parseInt(label.substring(1));
+    }
 }
