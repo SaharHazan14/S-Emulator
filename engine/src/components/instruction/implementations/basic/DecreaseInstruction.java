@@ -1,4 +1,4 @@
-package components.instruction.implementations;
+package components.instruction.implementations.basic;
 
 import components.instruction.AbstractInstruction;
 import components.instruction.InstructionSemantic;

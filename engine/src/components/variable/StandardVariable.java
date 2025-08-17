@@ -1,7 +1,7 @@
 package components.variable;
 
 public class StandardVariable implements Variable {
-    public enum VariableType {INPUT, WORK, OUTPUT}
+    public enum VariableType {INPUT, WORK, OUTPUT, EMPTY}
 
     private final VariableType variableType;
     private final int serialNumber;
@@ -18,6 +18,7 @@ public class StandardVariable implements Variable {
             case INPUT -> "x" + serialNumber;
             case WORK -> "z" + serialNumber;
             case OUTPUT -> "y";
+            case EMPTY -> "";
         };
     }
 

@@ -28,4 +28,8 @@ public enum FixedLabel implements Label {
 
     @Override
     public abstract String getStringLabel();
+
+    @Override
+    public abstract int getSerialNumber();
+
 }

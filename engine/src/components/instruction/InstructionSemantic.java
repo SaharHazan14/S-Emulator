@@ -4,7 +4,11 @@ public enum InstructionSemantic {
     INCREASE("INCREASE", 1, InstructionType.BASIC),
     DECREASE("DECREASE", 1,  InstructionType.BASIC),
     JUMP_NOT_ZERO("JUMP_NOT_ZERO", 2, InstructionType.BASIC),
-    NEUTRAL("NEUTRAL", 0, InstructionType.BASIC),;
+    NEUTRAL("NEUTRAL", 0, InstructionType.BASIC),
+    ZERO_VARIABLE("ZERO_VARIABLE", 1, InstructionType.SYNTHETIC),
+    GOTO_LABEL("GOTO_LABEL", 1, InstructionType.SYNTHETIC),
+    ASSIGNMENT("ASSIGNMENT", 4, InstructionType.SYNTHETIC),
+    ;
 
     public enum InstructionType {
         BASIC,

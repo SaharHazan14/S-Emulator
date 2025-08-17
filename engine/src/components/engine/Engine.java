@@ -1,9 +1,11 @@
 package components.engine;
 
+import dtos.ProgramDetails;
+
 public interface Engine {
     // read XML to Program
 
-    String displayProgram();
+    ProgramDetails getProgramDetails();
 
     // boolean isProgramLoaded();
 }
