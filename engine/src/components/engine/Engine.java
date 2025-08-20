@@ -2,8 +2,10 @@ package components.engine;
 
 import dtos.ProgramDetails;
 
+import java.io.File;
+
 public interface Engine {
-    // read XML to Program
+    void loadProgramFromFile(File file);
 
     ProgramDetails getProgramDetails();
 
