@@ -6,8 +6,6 @@ import java.io.File;
 
 public interface Engine {
     void loadProgramFromFile(File file);
-
+    boolean isProgramLoaded();
     ProgramDetails getProgramDetails();
-
-    // boolean isProgramLoaded();
 }

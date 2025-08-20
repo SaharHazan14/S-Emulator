@@ -1,5 +1,10 @@
 package interactive;
 
+import components.instruction.Instruction;
+import components.label.Label;
+import components.variable.Variable;
+import dtos.ProgramDetails;
+
 import java.io.File;
 import java.util.Scanner;
 
@@ -83,5 +88,28 @@ public class ConsoleManager {
         } while (!validFile);
 
         return file;
+    }
+
+    public static void showProgram(ProgramDetails programDetails) {
+        System.out.println(programDetails.name());
+
+        for (Variable variable : programDetails.inputsVariables())
+        {
+            System.out.print(variable.getStringVariable() + " ");
+        }
+        System.out.println();
+
+        for (Label label : programDetails.labels())
+        {
+            System.out.print(label.getStringLabel() + " ");
+        }
+        System.out.println();
+
+        int i = 1;
+        for (Instruction instruction : programDetails.instructions()) {
+            System.out.println("#" + i + " " + instruction.getStringInstruction());
+            i++;
+        }
+        System.out.println();
     }
 }

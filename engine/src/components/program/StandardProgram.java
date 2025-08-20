@@ -1,6 +1,7 @@
 package components.program;
 
 import components.instruction.Instruction;
+import components.jaxb.generated.SProgram;
 import components.label.Label;
 import components.variable.StandardVariable;
 import components.variable.Variable;
