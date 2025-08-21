@@ -34,8 +34,8 @@ public class ConsoleManager {
                 command = switch (commandNumber) {
                     case 1 -> Command.READ_XML_FILE;
                     case 2 -> Command.SHOW_PROGRAM;
-                    case 3 -> Command.RUN_PROGRAM;
-                    case 4 -> Command.EXPAND_PROGRAM;
+                    case 3 -> Command.EXPAND_PROGRAM; // Fixed: Was RUN_PROGRAM
+                    case 4 -> Command.RUN_PROGRAM;    // Fixed: Was EXPAND_PROGRAM
                     case 5 -> Command.SHOW_STATISTICS;
                     case 6 -> Command.EXIT;
                     default -> {
@@ -90,7 +90,13 @@ public class ConsoleManager {
         return file;
     }
 
+    // Overloaded showProgram to keep the old one working
     public static void showProgram(ProgramDetails programDetails) {
+        showProgram(programDetails, false);
+    }
+
+    // New showProgram that handles expansion history
+    public static void showProgram(ProgramDetails programDetails, boolean showExpansionHistory) {
         System.out.println("Program name: " + programDetails.name());
 
         System.out.print("Variables:");
@@ -110,25 +116,40 @@ public class ConsoleManager {
         int i = 1;
         System.out.println("Instructions:");
         for (Instruction instruction : programDetails.instructions()) {
-            System.out.println("#" + i + " " + instruction.getStringInstruction());
+            StringBuilder line = new StringBuilder();
+            line.append("#").append(i).append(" ").append(instruction.getStringInstruction());
+
+            if (showExpansionHistory) {
+                Instruction original = instruction.getOriginalInstruction();
+                while (original != null) {
+                    line.append(" <<< ").append(original.getStringInstruction());
+                    original = original.getOriginalInstruction();
+                }
+            }
+            System.out.println(line);
             i++;
         }
         System.out.println();
     }
 
+
     public static int getExpansionDegreeFromUser(int maxDegree) {
         int degree = -1;
+        if (maxDegree == 0) {
+            System.out.println("This program contains only basic instructions and cannot be expanded.");
+            return 0;
+        }
         do {
             System.out.println("The maximum expansion degree is " + maxDegree);
-            System.out.print("Please enter the desired expansion degree (0 for none): ");
+            System.out.print("Please enter the desired expansion degree (from 0 to " + maxDegree + "): ");
             try {
                 degree = Integer.parseInt(scanner.nextLine());
                 if (degree < 0 || degree > maxDegree) {
-                    System.out.println("Invalid degree. Please enter a number between 0 and " + maxDegree);
+                    System.out.println("Invalid degree. Please enter a number between 0 and " + maxDegree + "." + System.lineSeparator());
                     degree = -1;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Invalid input. Please enter a number.");
+                System.out.println("Invalid input. Please enter a number." + System.lineSeparator());
             }
         } while (degree == -1);
         return degree;

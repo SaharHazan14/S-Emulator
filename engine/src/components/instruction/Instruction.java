@@ -10,5 +10,6 @@ public interface Instruction {
     Label getLabel();
     Variable getVariable();
     String getStringInstruction();
+    Instruction getOriginalInstruction(); // Add this method
     InstructionSemantic getInstructionSemantic();
 }

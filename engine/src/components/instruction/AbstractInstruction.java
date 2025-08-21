@@ -10,31 +10,30 @@ public abstract class AbstractInstruction implements Instruction {
     private final Label label;
     private final Instruction originalInstruction;
 
-    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable, Instruction originalInstruction) {
-        this(instructionSemantic, variable, FixedLabel.EMPTY, originalInstruction);
-    }
-
-    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable,  Label label, Instruction originalInstruction) {
+    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable, Label label, Instruction originalInstruction) {
         this.instructionSemantic = instructionSemantic;
         this.variable = variable;
         this.label = label;
         this.originalInstruction = originalInstruction;
     }
-    //with not origin
-    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable) {
-        this(instructionSemantic, variable, FixedLabel.EMPTY, null);
+
+    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable, Label label) {
+        this(instructionSemantic, variable, label, null);
     }
 
-    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable,  Label label) {
-        this.instructionSemantic = instructionSemantic;
-        this.variable = variable;
-        this.label = label;
-        this.originalInstruction = null;
+    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable) {
+        this(instructionSemantic, variable, FixedLabel.EMPTY, null);
     }
 
     @Override
     public String getName() {
         return instructionSemantic.getName();
+    }
+
+    // This is the new method that fixes the error
+    @Override
+    public InstructionSemantic getInstructionSemantic() {
+        return instructionSemantic;
     }
 
     @Override
@@ -52,17 +51,13 @@ public abstract class AbstractInstruction implements Instruction {
         return variable;
     }
 
-    public String getInstructionDisplay(String command) {
-        return String.format("(%c) [ %-3s ] %s (%d)",
-                instructionSemantic.getInstructionTypeChar(), label.getStringLabel(), command, instructionSemantic.getCyclesNumber());
-    }
-
+    @Override
     public Instruction getOriginalInstruction() {
         return originalInstruction;
     }
 
-
-    public InstructionSemantic getInstructionSemantic() {
-        return instructionSemantic;
+    public String getInstructionDisplay(String command) {
+        return String.format("(%c) [%-5s] %s (%d)",
+                instructionSemantic.getInstructionTypeChar(), label.getStringLabel(), command, instructionSemantic.getCyclesNumber());
     }
 }
