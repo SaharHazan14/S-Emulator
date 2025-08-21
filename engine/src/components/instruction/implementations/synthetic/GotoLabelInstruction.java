@@ -29,4 +29,10 @@ public class GotoLabelInstruction extends AbstractInstruction {
 
         return getInstructionDisplay(command);
     }
+
+
+    public Label getGotoLabel() {
+        return gotoLabel;
+    }
+
 }

@@ -30,4 +30,9 @@ public class AssignmentInstruction extends AbstractInstruction {
 
         return getInstructionDisplay(command);
     }
+
+
+    public Variable getAssignedVariable() {
+        return assignedVariable;
+    }
 }

@@ -30,4 +30,9 @@ public class ConstantAssignmentInstruction extends AbstractInstruction {
 
         return getInstructionDisplay(command);
     }
+
+
+    public int getConstantValue() {
+        return constantValue;
+    }
 }
