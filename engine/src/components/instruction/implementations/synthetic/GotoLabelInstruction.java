@@ -1,6 +1,7 @@
 package components.instruction.implementations.synthetic;
 
 import components.instruction.AbstractInstruction;
+import components.instruction.Instruction;
 import components.instruction.InstructionSemantic;
 import components.label.FixedLabel;
 import components.label.Label;
@@ -18,6 +19,16 @@ public class GotoLabelInstruction extends AbstractInstruction {
         this.gotoLabel = gotoLabel;
     }
 
+    // This is the constructor that fixes the error
+    public GotoLabelInstruction(Label gotoLabel, Label label, Instruction originalInstruction) {
+        super(InstructionSemantic.GOTO_LABEL, Variable.EMPTY, label, originalInstruction);
+        this.gotoLabel = gotoLabel;
+    }
+
+    public Label getGotoLabel() {
+        return gotoLabel;
+    }
+
     @Override
     public void execute() {
 
@@ -29,10 +40,4 @@ public class GotoLabelInstruction extends AbstractInstruction {
 
         return getInstructionDisplay(command);
     }
-
-
-    public Label getGotoLabel() {
-        return gotoLabel;
-    }
-
 }

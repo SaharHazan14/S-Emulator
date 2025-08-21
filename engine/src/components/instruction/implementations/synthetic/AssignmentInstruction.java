@@ -18,6 +18,10 @@ public class AssignmentInstruction extends AbstractInstruction {
         this.assignedVariable = assignedVariable;
     }
 
+    public Variable getAssignedVariable() {
+        return assignedVariable;
+    }
+
     @Override
     public void execute() {
 
@@ -29,10 +33,5 @@ public class AssignmentInstruction extends AbstractInstruction {
         String command = String.format("%s <- %s", variable, assignedVariable.getStringVariable());
 
         return getInstructionDisplay(command);
-    }
-
-
-    public Variable getAssignedVariable() {
-        return assignedVariable;
     }
 }

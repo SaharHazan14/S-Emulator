@@ -1,6 +1,7 @@
 package components.instruction.implementations.synthetic;
 
 import components.instruction.AbstractInstruction;
+import components.instruction.Instruction;
 import components.instruction.InstructionSemantic;
 import components.label.FixedLabel;
 import components.label.Label;
@@ -18,6 +19,16 @@ public class ConstantAssignmentInstruction extends AbstractInstruction {
         this.constantValue = constantValue;
     }
 
+    // Constructor for expansion
+    public ConstantAssignmentInstruction(Variable variable, int constantValue, Label label, Instruction originalInstruction) {
+        super(InstructionSemantic.CONSTANT_ASSIGNMENT, variable, label, originalInstruction);
+        this.constantValue = constantValue;
+    }
+
+    public int getConstantValue() {
+        return constantValue;
+    }
+
     @Override
     public void execute() {
 
@@ -29,10 +40,5 @@ public class ConstantAssignmentInstruction extends AbstractInstruction {
         String command = String.format("%s <- %d", variable, constantValue);
 
         return getInstructionDisplay(command);
-    }
-
-
-    public int getConstantValue() {
-        return constantValue;
     }
 }

@@ -14,8 +14,12 @@ public class JumpZeroInstruction extends AbstractInstruction {
     }
 
     public JumpZeroInstruction(Variable variable, Label JZLabel, Label label) {
-        super(InstructionSemantic.JUMP_ZERO, variable, label, null);
+        super(InstructionSemantic.JUMP_ZERO, variable, label);
         this.JZLabel = JZLabel;
+    }
+
+    public Label getJZLabel() {
+        return JZLabel;
     }
 
     @Override
