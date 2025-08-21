@@ -1,5 +1,7 @@
 package components.variable;
 
+import java.util.Objects;
+
 public class StandardVariable implements Variable {
     public enum VariableType {INPUT, WORK, OUTPUT, EMPTY}
 
@@ -30,5 +32,17 @@ public class StandardVariable implements Variable {
     @Override
     public int getSerialNumber() {
         return serialNumber;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        StandardVariable that = (StandardVariable) o;
+        return serialNumber == that.serialNumber && variableType == that.variableType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(variableType, serialNumber);
     }
 }

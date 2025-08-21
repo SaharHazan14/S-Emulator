@@ -91,21 +91,24 @@ public class ConsoleManager {
     }
 
     public static void showProgram(ProgramDetails programDetails) {
-        System.out.println(programDetails.name());
+        System.out.println("Program name: " + programDetails.name());
 
+        System.out.print("Variables:");
         for (Variable variable : programDetails.inputsVariables())
         {
-            System.out.print(variable.getStringVariable() + " ");
+            System.out.print(" " + variable.getStringVariable());
         }
         System.out.println();
 
+        System.out.print("Labels:");
         for (Label label : programDetails.labels())
         {
-            System.out.print(label.getStringLabel() + " ");
+            System.out.print(" " + label.getStringLabel());
         }
         System.out.println();
 
         int i = 1;
+        System.out.println("Instructions:");
         for (Instruction instruction : programDetails.instructions()) {
             System.out.println("#" + i + " " + instruction.getStringInstruction());
             i++;

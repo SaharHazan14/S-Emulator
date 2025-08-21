@@ -5,6 +5,7 @@ import components.instruction.implementations.basic.DecreaseInstruction;
 import components.instruction.implementations.basic.IncreaseInstruction;
 import components.instruction.implementations.basic.JumpNotZeroInstruction;
 import components.instruction.implementations.basic.NeutralInstruction;
+import components.instruction.implementations.synthetic.*;
 import components.jaxb.generated.SInstruction;
 import components.jaxb.generated.SInstructionArgument;
 import components.jaxb.generated.SInstructionArguments;
@@ -33,7 +34,7 @@ public class JaxbConversion {
         Variable instructionVariable = SVariableToVariable(sInstruction.getSVariable());
         Label instructionLabel = SLabelToLabel(sInstruction.getSLabel());
         SInstructionArguments sInstructionArguments = sInstruction.getSInstructionArguments();
-        List<SInstructionArgument> argumentsList = new ArrayList<SInstructionArgument>();
+        List<SInstructionArgument> argumentsList = new ArrayList<>();
         if (sInstructionArguments != null)
         {
             argumentsList = sInstructionArguments.getSInstructionArgument();
@@ -48,10 +49,39 @@ public class JaxbConversion {
             }
             case "JUMP_NOT_ZERO" -> {
                 Label JNZLabel = SLabelToLabel(argumentsList.getFirst().getValue());
-                return  new JumpNotZeroInstruction(instructionVariable,  JNZLabel, instructionLabel);
+                return new JumpNotZeroInstruction(instructionVariable,  JNZLabel, instructionLabel);
             }
             case "NEUTRAL" -> {
                 return new NeutralInstruction(instructionVariable, instructionLabel);
+            }
+            case "ZERO_VARIABLE" -> {
+                return new ZeroVariableInstruction(instructionVariable, instructionLabel);
+            }
+            case "GOTO_LABEL" -> {
+                Label gotoLabel = SLabelToLabel(argumentsList.getFirst().getValue());
+                return new GotoLabelInstruction(gotoLabel, instructionLabel);
+            }
+            case "ASSIGNMENT" -> {
+                Variable assignmentVariable = SVariableToVariable(argumentsList.getFirst().getValue());
+                return new AssignmentInstruction(instructionVariable, assignmentVariable, instructionLabel);
+            }
+            case "CONSTANT_ASSIGNMENT" -> {
+                int constantValue = Integer.parseInt(argumentsList.getFirst().getValue());
+                return new ConstantAssignmentInstruction(instructionVariable, constantValue, instructionLabel);
+            }
+            case "JUMP_ZERO" -> {
+                Label JZLabel = SLabelToLabel(argumentsList.getFirst().getValue());
+                return new JumpZeroInstruction(instructionVariable, JZLabel, instructionLabel);
+            }
+            case "JUMP_EQUAL_CONSTANT" -> {
+                Label JEConstantLabel = SLabelToLabel(argumentsList.getFirst().getValue());
+                int constantValue = Integer.parseInt(argumentsList.get(1).getValue());
+                return new JumpEqualConstantInstruction(instructionVariable, JEConstantLabel, constantValue, instructionLabel);
+            }
+            case "JUMP_EQUAL_VARIABLE" -> {
+                Label JEVariableLabel = SLabelToLabel(argumentsList.getFirst().getValue());
+                Variable variableName = SVariableToVariable(argumentsList.get(1).getValue());
+                return new JumpEqualVariableInstruction(instructionVariable, JEVariableLabel, variableName, instructionLabel);
             }
             default -> throw new RuntimeException("Unknown instruction: " + sInstruction.getName());
         }

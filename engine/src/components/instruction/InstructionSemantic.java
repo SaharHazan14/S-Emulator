@@ -8,6 +8,10 @@ public enum InstructionSemantic {
     ZERO_VARIABLE("ZERO_VARIABLE", 1, InstructionType.SYNTHETIC),
     GOTO_LABEL("GOTO_LABEL", 1, InstructionType.SYNTHETIC),
     ASSIGNMENT("ASSIGNMENT", 4, InstructionType.SYNTHETIC),
+    CONSTANT_ASSIGNMENT("CONSTANT_ASSIGNMENT", 2, InstructionType.SYNTHETIC),
+    JUMP_ZERO("JUMP_ZERO", 2, InstructionType.SYNTHETIC),
+    JUMP_EQUAL_CONSTANT("JUMP_EQUAL_CONSTANT", 2, InstructionType.SYNTHETIC),
+    JUMP_EQUAL_VARIABLE("JUMP_EQUAL_VARIABLE", 2, InstructionType.SYNTHETIC),
     ;
 
     public enum InstructionType {

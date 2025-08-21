@@ -2,6 +2,7 @@ package components.program;
 
 import components.instruction.Instruction;
 import components.jaxb.generated.SProgram;
+import components.label.FixedLabel;
 import components.label.Label;
 import components.variable.StandardVariable;
 import components.variable.Variable;
@@ -49,7 +50,7 @@ public class StandardProgram implements Program {
         for(Instruction instruction : instructions) {
             currentLabel = instruction.getLabel();
 
-            if (!labels.contains(currentLabel)) {
+            if (!labels.contains(currentLabel) && currentLabel != FixedLabel.EMPTY) {
                 labels.add(currentLabel);
             }
         }
