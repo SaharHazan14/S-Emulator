@@ -40,7 +40,7 @@ public class LogicManager implements Runnable {
                         // 2. קרא למנוע כדי לקבל את פרטי התוכנית המורחבת
                         ProgramDetails expandedDetails = engine.getExpandedProgramDetails(degree);
                         // 3. הצג את התוצאה למשתמש
-                        ConsoleManager.showProgram(expandedDetails, true); // נעביר פרמטר נוסף כדי שידע להדפיס היסטוריה
+                        ConsoleManager.showProgram(expandedDetails); // נעביר פרמטר נוסף כדי שידע להדפיס היסטוריה
                     } else {
                         System.out.println("There is no loaded program in the system." + System.lineSeparator());
                     }

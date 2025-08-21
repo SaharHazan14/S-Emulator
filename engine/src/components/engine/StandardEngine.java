@@ -88,4 +88,22 @@ public class StandardEngine implements Engine {
         return new ProgramDetails(program.getName(), program.getInputVariables(),
                 program.getLabels(), program.getInstructions());
     }
+
+    @Override
+    public ProgramDetails getExpandedProgramDetails(int degree) {
+        if (!programLoaded) {
+            throw new IllegalStateException("No program loaded.");
+        }
+        Program expandedProgram = program.expand(degree);
+        return new ProgramDetails(expandedProgram.getName(), expandedProgram.getInputVariables(),
+                expandedProgram.getLabels(), expandedProgram.getInstructions());
+    }
+
+    @Override
+    public int getMaxDegree() {
+        if(!programLoaded) {
+            return 0;
+        }
+        return program.calculateMaxDegree();
+    }
 }

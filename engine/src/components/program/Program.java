@@ -11,11 +11,10 @@ public interface Program {
     List<Variable> getInputVariables();
     List<Label> getLabels();
     List<Instruction> getInstructions();
+    Program expand(int degree);
 
     void addInstruction(Instruction instruction);
     boolean validate();
     int calculateMaxDegree();
     int calculateCyclesNumber();
-
-    Program expand(int degree);
 }

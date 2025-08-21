@@ -115,4 +115,22 @@ public class ConsoleManager {
         }
         System.out.println();
     }
+
+    public static int getExpansionDegreeFromUser(int maxDegree) {
+        int degree = -1;
+        do {
+            System.out.println("The maximum expansion degree is " + maxDegree);
+            System.out.print("Please enter the desired expansion degree (0 for none): ");
+            try {
+                degree = Integer.parseInt(scanner.nextLine());
+                if (degree < 0 || degree > maxDegree) {
+                    System.out.println("Invalid degree. Please enter a number between 0 and " + maxDegree);
+                    degree = -1;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
+        } while (degree == -1);
+        return degree;
+    }
 }

@@ -8,4 +8,6 @@ public interface Engine {
     void loadProgramFromFile(File file);
     boolean isProgramLoaded();
     ProgramDetails getProgramDetails();
+    ProgramDetails getExpandedProgramDetails(int degree);
+    int getMaxDegree();
 }

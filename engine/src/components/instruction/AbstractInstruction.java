@@ -20,6 +20,17 @@ public abstract class AbstractInstruction implements Instruction {
         this.label = label;
         this.originalInstruction = originalInstruction;
     }
+    //with not origin
+    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable) {
+        this(instructionSemantic, variable, FixedLabel.EMPTY, null);
+    }
+
+    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable,  Label label) {
+        this.instructionSemantic = instructionSemantic;
+        this.variable = variable;
+        this.label = label;
+        this.originalInstruction = null;
+    }
 
     @Override
     public String getName() {
