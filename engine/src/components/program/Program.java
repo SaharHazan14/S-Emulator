@@ -16,4 +16,6 @@ public interface Program {
     boolean validate();
     int calculateMaxDegree();
     int calculateCyclesNumber();
+
+    Program expand(int degree);
 }

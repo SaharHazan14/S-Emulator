@@ -2,6 +2,7 @@ package interactive;
 
 import components.engine.Engine;
 import components.engine.StandardEngine;
+import dtos.ProgramDetails;
 
 import java.io.File;
 
@@ -32,7 +33,18 @@ public class LogicManager implements Runnable {
                         System.out.println("There is no loaded program in the system." + System.lineSeparator());
                     }
                 }
-                case EXPAND_PROGRAM -> {}
+                case EXPAND_PROGRAM -> {
+                    if (engine.isProgramLoaded()) {
+                        // 1. קבל מהמשתמש את דרגת ההרחבה הרצויה דרך ConsoleManager
+                        int degree = ConsoleManager.getExpansionDegreeFromUser(engine.getMaxDegree()); // תצטרך לממש את getMaxDegree
+                        // 2. קרא למנוע כדי לקבל את פרטי התוכנית המורחבת
+                        ProgramDetails expandedDetails = engine.getExpandedProgramDetails(degree);
+                        // 3. הצג את התוצאה למשתמש
+                        ConsoleManager.showProgram(expandedDetails, true); // נעביר פרמטר נוסף כדי שידע להדפיס היסטוריה
+                    } else {
+                        System.out.println("There is no loaded program in the system." + System.lineSeparator());
+                    }
+                }
                 case RUN_PROGRAM -> {}
                 case SHOW_STATISTICS -> {}
                 case EXIT -> {

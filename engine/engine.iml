@@ -15,5 +15,6 @@
     <orderEntry type="library" name="jaxb-impl" level="project" />
     <orderEntry type="library" name="jaxb-jxc" level="project" />
     <orderEntry type="library" name="jaxb-xjc" level="project" />
+    <orderEntry type="library" name="mod" level="project" />
   </component>
 </module>
