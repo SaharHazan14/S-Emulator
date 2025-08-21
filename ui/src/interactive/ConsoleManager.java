@@ -119,13 +119,13 @@ public class ConsoleManager {
             StringBuilder line = new StringBuilder();
             line.append("#").append(i).append(" ").append(instruction.getStringInstruction());
 
-            if (showExpansionHistory) {
-                Instruction original = instruction.getOriginalInstruction();
-                while (original != null) {
-                    line.append(" <<< ").append(original.getStringInstruction());
-                    original = original.getOriginalInstruction();
-                }
+//            if (!showExpansionHistory) {
+            Instruction original = instruction.getOriginalInstruction();
+            while (original != null) {
+                line.append(" <<< ").append(original.getStringInstruction());
+                original = original.getOriginalInstruction();
             }
+//            }
             System.out.println(line);
             i++;
         }
