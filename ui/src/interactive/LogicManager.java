@@ -35,12 +35,12 @@ public class LogicManager implements Runnable {
                 }
                 case EXPAND_PROGRAM -> {
                     if (engine.isProgramLoaded()) {
-                        // 1. קבל מהמשתמש את דרגת ההרחבה הרצויה דרך ConsoleManager
-                        int degree = ConsoleManager.getExpansionDegreeFromUser(engine.getMaxDegree()); // תצטרך לממש את getMaxDegree
-                        // 2. קרא למנוע כדי לקבל את פרטי התוכנית המורחבת
+                        //get from user how much to expand
+                        int degree = ConsoleManager.getExpansionDegreeFromUser(engine.getMaxDegree());
+
                         ProgramDetails expandedDetails = engine.getExpandedProgramDetails(degree);
-                        // 3. הצג את התוצאה למשתמש
-                        ConsoleManager.showProgram(expandedDetails); // נעביר פרמטר נוסף כדי שידע להדפיס היסטוריה
+
+                        ConsoleManager.showProgram(expandedDetails);
                     } else {
                         System.out.println("There is no loaded program in the system." + System.lineSeparator());
                     }

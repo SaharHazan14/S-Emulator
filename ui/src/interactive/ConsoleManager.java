@@ -95,7 +95,7 @@ public class ConsoleManager {
         showProgram(programDetails, false);
     }
 
-    // New showProgram that handles expansion history
+
     public static void showProgram(ProgramDetails programDetails, boolean showExpansionHistory) {
         System.out.println("Program name: " + programDetails.name());
 
@@ -121,7 +121,7 @@ public class ConsoleManager {
 
 //            if (!showExpansionHistory) {
             Instruction original = instruction.getOriginalInstruction();
-            while (original != null) {
+            while (original != null) { //show origin command
                 line.append(" <<< ").append(original.getStringInstruction());
                 original = original.getOriginalInstruction();
             }
