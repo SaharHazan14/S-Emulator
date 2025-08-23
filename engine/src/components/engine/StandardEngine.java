@@ -1,18 +1,23 @@
 package components.engine;
 
+import components.executor.Executor;
+import components.executor.ProgramExecutor;
 import components.program.JaxbConversion;
 import components.jaxb.generated.SInstruction;
 import components.jaxb.generated.SInstructionArgument;
 import components.jaxb.generated.SProgram;
 import components.program.Program;
 import dtos.ProgramDetails;
+import dtos.RunHistoryDetails;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class StandardEngine implements Engine {
@@ -20,6 +25,11 @@ public class StandardEngine implements Engine {
 
     private Program program;
     private boolean programLoaded = false;
+    private List<RunHistoryDetails> runHistory;
+
+    public StandardEngine() {
+        this.runHistory = new ArrayList<>();
+    }
 
     @Override
     public boolean isProgramLoaded() {
@@ -105,5 +115,29 @@ public class StandardEngine implements Engine {
             return 0;
         }
         return program.calculateMaxDegree();
+    }
+
+
+    @Override
+    public RunHistoryDetails runProgram(int degree, List<Long> inputs) {
+        Program programToRun = program.expand(degree);
+        Executor executor = new ProgramExecutor();
+        long outputY = executor.run(programToRun, inputs);
+
+        RunHistoryDetails details = new RunHistoryDetails(
+                runHistory.size() + 1,
+                degree,
+                inputs,
+                outputY,
+                executor.getCyclesConsumed()
+        );
+
+        runHistory.add(details);
+        return details;
+    }
+
+    @Override
+    public List<RunHistoryDetails> getRunHistory() {
+        return runHistory;
     }
 }
