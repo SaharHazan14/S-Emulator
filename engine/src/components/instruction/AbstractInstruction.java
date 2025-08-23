@@ -30,7 +30,6 @@ public abstract class AbstractInstruction implements Instruction {
         return instructionSemantic.getName();
     }
 
-    // This is the new method that fixes the error
     @Override
     public InstructionSemantic getInstructionSemantic() {
         return instructionSemantic;
@@ -54,6 +53,18 @@ public abstract class AbstractInstruction implements Instruction {
     @Override
     public Instruction getOriginalInstruction() {
         return originalInstruction;
+    }
+
+    /**
+     * Implements the logic to find the top-level ancestor.
+     */
+    @Override
+    public Instruction getUltimateOriginalInstruction() {
+        Instruction ultimate = this;
+        while (ultimate.getOriginalInstruction() != null) {
+            ultimate = ultimate.getOriginalInstruction();
+        }
+        return ultimate;
     }
 
     public String getInstructionDisplay(String command) {

@@ -143,17 +143,17 @@ public class StandardProgram implements Program {
         Program currentProgram = this;
         for (int i = 0; i < degree; i++) {
             Program nextProgram = new StandardProgram(this.name + "_expanded_degree_" + (i + 1));
-            boolean wasExpanded = false;
+            boolean wasExpandedInThisPass = false;
             for (Instruction instruction : currentProgram.getInstructions()) {
                 if (isSynthetic(instruction)) {
                     nextProgram.getInstructions().addAll(expandInstruction(instruction));
-                    wasExpanded = true;
+                    wasExpandedInThisPass = true;
                 } else {
                     nextProgram.addInstruction(instruction);
                 }
             }
             currentProgram = nextProgram;
-            if (!wasExpanded) {
+            if (!wasExpandedInThisPass) {
                 break;
             }
         }
@@ -165,16 +165,12 @@ public class StandardProgram implements Program {
         return false;
     }
 
-    /**
-     * Recursively calculates the expansion degree of a single instruction.
-     */
     private int getInstructionDegree(Instruction instruction) {
         if (!isSynthetic(instruction)) {
             return 0;
         }
 
         List<Instruction> children = expandInstruction(instruction);
-        // This case handles synthetic instructions that we haven't implemented the expansion for yet.
         if (children.size() == 1 && children.get(0) == instruction) {
             return 1;
         }
@@ -187,9 +183,6 @@ public class StandardProgram implements Program {
         return 1 + maxChildDegree;
     }
 
-    /**
-     * Calculates the maximum expansion degree for the entire program.
-     */
     @Override
     public int calculateMaxDegree() {
         int maxDegree = 0;

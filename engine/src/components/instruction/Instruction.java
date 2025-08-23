@@ -10,6 +10,13 @@ public interface Instruction {
     Label getLabel();
     Variable getVariable();
     String getStringInstruction();
-    Instruction getOriginalInstruction(); // Add this method
     InstructionSemantic getInstructionSemantic();
+    Instruction getOriginalInstruction();
+
+    /**
+     * Finds the top-level ancestor of this instruction in an expansion chain.
+     * If the instruction was not created by an expansion, it returns itself.
+     * @return The highest-level original instruction.
+     */
+    Instruction getUltimateOriginalInstruction();
 }
