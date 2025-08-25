@@ -3,13 +3,18 @@ package components.executor;
 import components.instruction.Instruction;
 import components.instruction.implementations.basic.JumpNotZeroInstruction;
 import components.instruction.implementations.synthetic.AssignmentInstruction;
+import components.instruction.implementations.synthetic.GotoLabelInstruction;
 import components.label.Label;
 import components.program.Program;
+import components.variable.StandardVariable;
 import components.variable.Variable;
+import components.variable.VariableFactory;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ProgramExecutor implements Executor {
 
@@ -25,6 +30,7 @@ public class ProgramExecutor implements Executor {
     public Long run(Program program, List<Long> inputs) {
         this.variables.clear();
         this.cyclesConsumed = 0;
+        // The logic for initializing variables is now self-contained here, as per your instructions.
         initializeAllVariables(program, inputs);
 
         Map<String, Integer> labelMap = buildLabelMap(program.getInstructions());
@@ -43,11 +49,12 @@ public class ProgramExecutor implements Executor {
                 handleAssignment((AssignmentInstruction) currentInstruction);
             } else if (currentInstruction instanceof JumpNotZeroInstruction) {
                 int jumpIndex = handleJump((JumpNotZeroInstruction) currentInstruction, labelMap);
-                if (jumpIndex < -1) { // -2 signals EXIT
-                    nextProgramCounter = -1;
-                } else if (jumpIndex != -1) { // A valid jump occurred
-                    nextProgramCounter = jumpIndex;
-                }
+                if (jumpIndex < -1) { nextProgramCounter = -1; }
+                else if (jumpIndex != -1) { nextProgramCounter = jumpIndex; }
+            } else if (currentInstruction instanceof GotoLabelInstruction) { // **THIS FIXES THE "MINUS" BUG**
+                int jumpIndex = handleGoto((GotoLabelInstruction) currentInstruction, labelMap);
+                if (jumpIndex < -1) { nextProgramCounter = -1; }
+                else if (jumpIndex != -1) { nextProgramCounter = jumpIndex; }
             } else {
                 switch (currentInstruction.getInstructionSemantic()) {
                     case INCREASE:
@@ -72,27 +79,38 @@ public class ProgramExecutor implements Executor {
         return findVariableValue(Variable.OUTPUT);
     }
 
+    /**
+     * This method now correctly handles variable initialization according to your rules.
+     */
     private void initializeAllVariables(Program program, List<Long> inputs) {
-        List<Variable> inputVars = program.getInputVariables();
-        for (int i = 0; i < inputVars.size(); i++) {
-            Variable var = inputVars.get(i);
-            long value = (i < inputs.size()) ? inputs.get(i) : 0L;
-            this.variables.put(var, value);
-        }
-
+        // 1. Find all variables mentioned in the program code to initialize them to 0.
+        Set<Variable> allVarsInProgram = new HashSet<>();
         for (Instruction instruction : program.getInstructions()) {
-            Variable var = instruction.getVariable();
-            if (var != null && var != Variable.EMPTY) {
-                this.variables.putIfAbsent(var, 0L);
+            if (instruction.getVariable() != null && instruction.getVariable() != Variable.EMPTY) {
+                allVarsInProgram.add(instruction.getVariable());
             }
             if (instruction instanceof AssignmentInstruction) {
                 Variable sourceVar = ((AssignmentInstruction) instruction).getAssignedVariable();
                 if (sourceVar != null && sourceVar != Variable.EMPTY) {
-                    this.variables.putIfAbsent(sourceVar, 0L);
+                    allVarsInProgram.add(sourceVar);
                 }
             }
         }
-        this.variables.putIfAbsent(Variable.OUTPUT, 0L);
+
+        // Initialize all found variables to 0.
+        for(Variable var : allVarsInProgram) {
+            this.variables.put(var, 0L);
+        }
+
+        // Specifically initialize output variable 'y'.
+        this.variables.put(Variable.OUTPUT, 0L);
+
+        // 2. Assign values from the terminal input list to x1, x2, x3...
+        for (int i = 0; i < inputs.size(); i++) {
+            // Create a new Variable object for each input (x1, x2, etc.)
+            Variable inputVar = new StandardVariable(StandardVariable.VariableType.INPUT, i + 1);
+            this.variables.put(inputVar, inputs.get(i));
+        }
     }
 
     private Map<String, Integer> buildLabelMap(List<Instruction> instructions) {
@@ -134,6 +152,18 @@ public class ProgramExecutor implements Executor {
             }
         }
         return -1;
+    }
+
+    private int handleGoto(GotoLabelInstruction instruction, Map<String, Integer> labelMap) {
+        Label targetLabel = instruction.getGotoLabel();
+        if (targetLabel != null) {
+            String targetLabelName = targetLabel.getStringLabel();
+            if ("EXIT".equalsIgnoreCase(targetLabelName)) {
+                return -2; // Signal program termination
+            }
+            return labelMap.getOrDefault(targetLabelName, -1);
+        }
+        return -1; // Should not happen if validation is correct
     }
 
     private void handleAssignment(AssignmentInstruction instruction) {

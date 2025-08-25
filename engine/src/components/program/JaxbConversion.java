@@ -17,49 +17,22 @@ import components.variable.StandardVariable;
 import components.variable.Variable;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class JaxbConversion {
     public static Program SProgramToProgram(SProgram sProgram) {
-        // --- THE DEFINITIVE FIX STARTS HERE ---
+        // Per your instructions, we create empty input lists. The executor will handle all terminal inputs.
+        List<Variable> inputVariables = new ArrayList<>();
         List<Instruction> instructions = new ArrayList<>();
-        Set<Variable> foundInputVariables = new HashSet<>();
 
-        // First, we must iterate through all instructions from the XML to build our own instruction list
-        // and simultaneously discover all the input variables (x1, x2, etc.) that the program uses.
+        Program program = new StandardProgram(sProgram.getName(), inputVariables, instructions);
+
         if (sProgram.getSInstructions() != null && sProgram.getSInstructions().getSInstruction() != null) {
             for (SInstruction sInstruction : sProgram.getSInstructions().getSInstruction()) {
-                Instruction instruction = SInstructionToInstruction(sInstruction);
-                instructions.add(instruction);
-
-                // Check the primary variable of the instruction (e.g., the 'x1' in "x1 <- x1 - 1").
-                Variable primaryVar = instruction.getVariable();
-                if (primaryVar != null && primaryVar.getVariableType() == StandardVariable.VariableType.INPUT) {
-                    foundInputVariables.add(primaryVar);
-                }
-
-                // Also check variables in the arguments (e.g., the second 'x1' in "y <- x1").
-                if (sInstruction.getSInstructionArguments() != null && sInstruction.getSInstructionArguments().getSInstructionArgument() != null) {
-                    for (SInstructionArgument arg : sInstruction.getSInstructionArguments().getSInstructionArgument()) {
-                        // A simple check to see if an argument is an input variable.
-                        if (arg.getValue() != null && arg.getValue().toLowerCase().startsWith("x")) {
-                            foundInputVariables.add(SVariableToVariable(arg.getValue()));
-                        }
-                    }
-                }
+                program.addInstruction(SInstructionToInstruction(sInstruction));
             }
         }
-
-        // Convert the set of unique input variables we found into a list.
-        List<Variable> inputVariables = new ArrayList<>(foundInputVariables);
-        // Sort the list so that x1 comes before x2, etc. This is crucial for correct assignment.
-        inputVariables.sort((v1, v2) -> Integer.compare(v1.getSerialNumber(), v2.getSerialNumber()));
-
-        // Finally, create the Program object with the correctly identified input variables and the full instruction list.
-        return new StandardProgram(sProgram.getName(), inputVariables, instructions);
-        // --- DEFINITIVE FIX ENDS HERE ---
+        return program;
     }
 
     private static Instruction SInstructionToInstruction(SInstruction sInstruction) {
@@ -67,8 +40,7 @@ public class JaxbConversion {
         Label instructionLabel = SLabelToLabel(sInstruction.getSLabel());
         SInstructionArguments sInstructionArguments = sInstruction.getSInstructionArguments();
         List<SInstructionArgument> argumentsList = new ArrayList<>();
-        if (sInstructionArguments != null)
-        {
+        if (sInstructionArguments != null) {
             argumentsList = sInstructionArguments.getSInstructionArgument();
         }
 
@@ -110,11 +82,9 @@ public class JaxbConversion {
     }
 
     private static Variable SVariableToVariable(String sVariable) {
-        if (sVariable == null || sVariable.isEmpty())
-        {
+        if (sVariable == null || sVariable.isEmpty()) {
             return Variable.EMPTY;
         }
-
         switch (sVariable.substring(0, 1).toLowerCase()) {
             case "x":
                 return new StandardVariable(StandardVariable.VariableType.INPUT,
@@ -133,12 +103,9 @@ public class JaxbConversion {
         if (sLabel == null || sLabel.isEmpty()) {
             return FixedLabel.EMPTY;
         }
-
-        if (sLabel.equals("EXIT"))
-        {
+        if (sLabel.equals("EXIT")) {
             return FixedLabel.EXIT;
         }
-
         return new StandardLabel(Integer.parseInt(sLabel.substring(1)));
     }
 }
