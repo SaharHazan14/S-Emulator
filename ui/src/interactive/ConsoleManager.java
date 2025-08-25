@@ -183,7 +183,7 @@ public class ConsoleManager {
         System.out.println("Please provide inputs for the program.");
         String required = requiredInputs.stream().map(Variable::getStringVariable).collect(Collectors.joining(", "));
         System.out.println("Required inputs are for: " + required);
-        System.out.print("Enter comma-separated numbers (e.g., 5,10,15): ");
+        System.out.print("Enter comma-separated numbers (e.g., 5, 10, 15): ");
 
         List<Long> inputs = new ArrayList<>();
         String line = scanner.nextLine();
