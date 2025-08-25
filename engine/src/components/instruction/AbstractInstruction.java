@@ -17,6 +17,11 @@ public abstract class AbstractInstruction implements Instruction {
         this.originalInstruction = originalInstruction;
     }
 
+    // Add this constructor
+    public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable, Instruction originalInstruction) {
+        this(instructionSemantic, variable, FixedLabel.EMPTY, originalInstruction);
+    }
+
     public AbstractInstruction(InstructionSemantic instructionSemantic, Variable variable, Label label) {
         this(instructionSemantic, variable, label, null);
     }
@@ -55,9 +60,6 @@ public abstract class AbstractInstruction implements Instruction {
         return originalInstruction;
     }
 
-    /**
-     * Implements the logic to find the top-level ancestor.
-     */
     @Override
     public Instruction getUltimateOriginalInstruction() {
         Instruction ultimate = this;

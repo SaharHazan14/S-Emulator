@@ -5,6 +5,7 @@ import components.label.Label;
 import components.variable.Variable;
 
 import java.util.List;
+import java.util.Optional; // Add this import
 
 public interface Program {
     String getName();
@@ -17,4 +18,7 @@ public interface Program {
     boolean validate();
     int calculateMaxDegree();
     int calculateCyclesNumber();
+
+    // Add this method signature
+    Optional<Variable> getVariableByName(String name);
 }
