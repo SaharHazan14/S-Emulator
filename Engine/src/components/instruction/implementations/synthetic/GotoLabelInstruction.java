@@ -34,9 +34,7 @@ public class GotoLabelInstruction extends AbstractInstruction {
 
     @Override
     public String getStringInstruction() {
-        String command = String.format("GOTO %s", gotoLabel.getStringLabel());
-
-        return getInstructionDisplay(command);
+        return String.format("GOTO %s", gotoLabel.getStringLabel());
     }
 
     @Override

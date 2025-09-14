@@ -34,9 +34,8 @@ public class ZeroVariableInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("%s <- 0", variable);
 
-        return getInstructionDisplay(command);
+        return String.format("%s <- 0", variable);
     }
 
     @Override

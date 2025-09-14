@@ -41,9 +41,8 @@ public class JumpZeroInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("IF %s = 0 GOTO %s", variable, JZLabel.getStringLabel());
 
-        return getInstructionDisplay(command);
+        return String.format("IF %s = 0 GOTO %s", variable, JZLabel.getStringLabel());
     }
 
     @Override

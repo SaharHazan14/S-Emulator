@@ -8,6 +8,10 @@ import components.label.Label;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.StandardVariable;
 import components.variable.Variable;
+import dtos.InstructionDetails;
+import dtos.LabelDetails;
+import dtos.ProgramDetails;
+import dtos.VariableDetails;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -163,5 +167,31 @@ public class StandardProgram implements Program {
         }
 
         return sum;
+    }
+
+    @Override
+    public ProgramDetails getProgramDetails() {
+        List<VariableDetails> inputVariables = new ArrayList<>();
+        for (Variable var : getInputVariables()) {
+            inputVariables.add(var.getVariableDetails());
+        }
+
+        List<VariableDetails> workVariables = new ArrayList<>();
+        for (Variable var : getWorkVariables()) {
+            workVariables.add(var.getVariableDetails());
+        }
+
+        List<LabelDetails> labels = new ArrayList<>();
+        for (Label label : getLabels()) {
+            labels.add(label.getLabelDetails());
+        }
+
+        List<InstructionDetails> instructions = new ArrayList<>();
+        for (Instruction instruction : getInstructions()) {
+            instructions.add(instruction.getInstructionDetails());
+        }
+
+        return new ProgramDetails(name, inputVariables, workVariables, labels, instructions,
+                calculateMaxDegree(), calculateBasicInstructionsNumber());
     }
 }

@@ -1,10 +1,9 @@
 package application.execution;
 
 import application.ApplicationController;
-import components.instruction.Instruction;
 import components.variable.Variable;
 import dtos.ExecutionDetails;
-import javafx.beans.property.SimpleLongProperty;
+import dtos.VariableDetails;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -19,8 +18,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.awt.*;
-import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,12 +76,12 @@ public class ExecutionController {
 
     }
 
-    public void setInputVariables(List<Variable> variables) {
+    public void setInputVariables(List<VariableDetails> variables) {
         VBox container = new VBox(10);
         container.setPadding(new Insets(10));
 
-        for (Variable variable : variables) {
-            Label label = new Label(variable.getStringVariable());
+        for (VariableDetails variable : variables) {
+            Label label = new Label(variable.variable());
             TextField textField = new TextField();
             inputsValues.add(textField);
             textField.setPrefWidth(50);

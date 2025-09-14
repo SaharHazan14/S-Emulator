@@ -3,6 +3,7 @@ package application.programview;
 import application.ApplicationController;
 import application.instructionhistory.InstructionHistoryController;
 import components.instruction.Instruction;
+import dtos.InstructionDetails;
 import dtos.ProgramDetails;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -18,33 +19,35 @@ public class ProgramViewController {
 
     @FXML
     private Label currentDegreeLabel;
-    private IntegerProperty currentDegreeProperty;
-    private IntegerProperty maxDegreeProperty;
+
+    private final IntegerProperty currentDegreeProperty;
+    private final IntegerProperty maxDegreeProperty;
 
     @FXML
-    private TableColumn<Instruction, Integer> instructionCyclesTableColumn;
+    private TableView<InstructionDetails> instructionsTableView;
+
+    private final ObservableList<InstructionDetails> instructionList = FXCollections.observableArrayList();
 
     @FXML
-    private TableColumn<Instruction, String> instructionDataTableColumn;
+    private TableColumn<InstructionDetails, Integer> instructionNumberTableColumn;
 
     @FXML
-    private TableColumn<Instruction, String> instructionLabelTableColumn;
+    private TableColumn<InstructionDetails, String> instructionTypeTableColumn;
 
     @FXML
-    private TableColumn<Instruction, Integer> instructionNumberTableColumn;
+    private TableColumn<InstructionDetails, String> instructionLabelTableColumn;
 
     @FXML
-    private TableColumn<Instruction, String> instructionTypeTableColumn;
+    private TableColumn<InstructionDetails, String> instructionDataTableColumn;
 
     @FXML
-    private TableView<Instruction> instructionsTableView;
-
-    private final ObservableList<Instruction> instructionList = FXCollections.observableArrayList();
+    private TableColumn<InstructionDetails, Integer> instructionCyclesTableColumn;
 
     @FXML
     private Label summaryLineLabel;
-    private IntegerProperty basicInstructionsProperty;
-    private IntegerProperty syntheticInstructionsProperty;
+
+    private final IntegerProperty basicInstructionsProperty;
+    private final IntegerProperty syntheticInstructionsProperty;
 
     @FXML
     private ComboBox<Integer> selectedDegreeComboBox;
@@ -55,43 +58,44 @@ public class ProgramViewController {
 
         basicInstructionsProperty = new SimpleIntegerProperty();
         syntheticInstructionsProperty = new SimpleIntegerProperty();
-
     }
 
     @FXML
     private void initialize() {
-        instructionNumberTableColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().getInstructionNumber()).asObject());
+        initializeTable();
 
-        instructionTypeTableColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getInstructionType().name().toLowerCase()));
-
-        instructionLabelTableColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getLabel().getStringLabel()));
-
-        instructionDataTableColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getStringInstruction()));
-
-        instructionCyclesTableColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().getCyclesNumber()).asObject());
-
-        instructionsTableView.setItems(instructionList);
-
-        //
         selectedDegreeComboBox.setPromptText("Select Degree");
 
-        // update properties
         currentDegreeProperty.setValue(0);
         currentDegreeLabel.textProperty().bind(Bindings.format("%d / %d", currentDegreeProperty,  maxDegreeProperty));
 
         summaryLineLabel.textProperty().bind(Bindings.format("Basic: %d, Synthetic: %d", basicInstructionsProperty, syntheticInstructionsProperty));
         selectedDegreeComboBox.disableProperty().bind(maxDegreeProperty.isEqualTo(0));
+    }
+
+    private void initializeTable() {
+        instructionNumberTableColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().ordinalNumber()).asObject());
+
+        instructionTypeTableColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().type().name().toLowerCase()));
+
+        instructionLabelTableColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().label().label()));
+
+        instructionDataTableColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().instructionContent()));
+
+        instructionCyclesTableColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().cycles()).asObject());
+
+        instructionsTableView.setItems(instructionList);
 
         instructionsTableView.setRowFactory(tv -> {
-            TableRow<Instruction> row = new TableRow<>();
+            TableRow<InstructionDetails> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (!row.isEmpty() && event.getClickCount() == 2) {
-                    Instruction clickedRow = row.getItem();
+                    InstructionDetails clickedRow = row.getItem();
                     applicationController.handleRowDoubleClick(clickedRow);
                 }
             });

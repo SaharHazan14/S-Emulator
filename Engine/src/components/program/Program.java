@@ -3,6 +3,7 @@ package components.program;
 import components.instruction.Instruction;
 import components.label.Label;
 import components.variable.Variable;
+import dtos.ProgramDetails;
 
 import java.io.Serializable;
 import java.util.List;
@@ -22,4 +23,5 @@ public interface Program extends Serializable {
     //public ProgramDetails getProgramDetails();
 
     int calculateBasicInstructionsNumber();
+    ProgramDetails getProgramDetails();
 }

@@ -6,9 +6,9 @@ import application.instructionhistory.InstructionHistoryController;
 import application.programview.ProgramViewController;
 import components.engine.Engine;
 import components.engine.StandardEngine;
-import components.instruction.Instruction;
-import components.variable.Variable;
 import dtos.ExecutionDetails;
+import dtos.InstructionDetails;
+import dtos.VariableDetails;
 import javafx.fxml.FXML;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -78,11 +78,11 @@ public class ApplicationController {
         programDegree = expansionDegree;
     }
 
-    public void handleRowDoubleClick(Instruction instruction) {
+    public void handleRowDoubleClick(InstructionDetails instruction) {
         instructionHistoryComponentController.showHistory(instruction);
     }
 
-    public void displayInputVariables(List<Variable> variables) {
+    public void displayInputVariables(List<VariableDetails> variables) {
         executionComponentController.setInputVariables(variables);
     }
 

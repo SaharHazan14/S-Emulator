@@ -1,5 +1,7 @@
 package components.variable;
 
+import dtos.VariableDetails;
+
 import java.util.Objects;
 
 public class StandardVariable implements Variable {
@@ -32,6 +34,11 @@ public class StandardVariable implements Variable {
     @Override
     public int getSerialNumber() {
         return serialNumber;
+    }
+
+    @Override
+    public VariableDetails getVariableDetails() {
+        return new VariableDetails(this.getStringVariable());
     }
 
     @Override

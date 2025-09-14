@@ -33,9 +33,8 @@ public class NeutralInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("%s <- %s", variable, variable);
 
-        return getInstructionDisplay(command);
+        return String.format("%s <- %s", variable, variable);
     }
 
     @Override

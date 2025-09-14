@@ -3,7 +3,9 @@ package components.instruction;
 import components.label.FixedLabel;
 import components.label.Label;
 import components.variable.Variable;
+import dtos.InstructionDetails;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractInstruction implements Instruction {
@@ -48,11 +50,12 @@ public abstract class AbstractInstruction implements Instruction {
         return variable;
     }
 
-    public String getInstructionDisplay(String command) {
-        /*return String.format("#%d (%c) [ %-3s ] %s (%d)", instructionNumber,
-                instructionSemantic.getInstructionTypeChar(), label.getStringLabel(), command, instructionSemantic.getCyclesNumber());*/
-        return command;
-    }
+//    public String getInstructionDisplay(String command) {
+//        /*return String.format("#%d (%c) [ %-3s ] %s (%d)", instructionNumber,
+//                instructionSemantic.getInstructionTypeChar(), label.getStringLabel(), command, instructionSemantic.getCyclesNumber());*/
+//        return command;
+//    }
+    public abstract String getStringInstruction();
 
     @Override
     public List<Label> getAllInvolvedLabels() {
@@ -92,5 +95,18 @@ public abstract class AbstractInstruction implements Instruction {
     @Override
     public InstructionSemantic.InstructionType getInstructionType() {
         return instructionSemantic.getInstructionType();
+    }
+
+    @Override
+    public InstructionDetails getInstructionDetails() {
+        List<InstructionDetails> ancientInstructions = new ArrayList<>();
+        Instruction currentInstruction = this;
+        while (currentInstruction.hasAncientInstruction()) {
+            currentInstruction = currentInstruction.getAncientInstruction();
+            ancientInstructions.add(currentInstruction.getInstructionDetails());
+        }
+
+        return new InstructionDetails(instructionNumber, instructionSemantic.getInstructionType(),
+                label.getLabelDetails(), getStringInstruction(), getCyclesNumber(), ancientInstructions);
     }
 }

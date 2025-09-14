@@ -4,11 +4,11 @@ import components.executor.ProgramExecutor;
 import components.jaxb.generated.SInstruction;
 import components.jaxb.generated.SInstructionArgument;
 import components.jaxb.generated.SProgram;
+import components.label.Label;
 import components.program.JaxbConversion;
 import components.program.Program;
-import dtos.ExecutionDetails;
-import dtos.ProgramDetails;
-import dtos.RunHistoryDetails;
+import components.variable.Variable;
+import dtos.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
 
@@ -96,7 +96,7 @@ public class StandardEngine implements Engine {
     // 2. Show Program
     @Override
     public ProgramDetails getProgramDetails() {
-        return new ProgramDetails(program.getName(), program.getInputVariables(), program.getWorkVariables(), program.getLabels(), program.getInstructions(), program.calculateMaxDegree(), program.calculateBasicInstructionsNumber());
+        return program.getProgramDetails();
     }
 
     // 3. Expand Program
@@ -108,7 +108,7 @@ public class StandardEngine implements Engine {
             expandedProgram = expandedProgram.expand();
         }
 
-        return new ProgramDetails(expandedProgram.getName(), expandedProgram.getInputVariables(), expandedProgram.getWorkVariables(), expandedProgram.getLabels(), expandedProgram.getInstructions(), expandedProgram.calculateMaxDegree(), expandedProgram.calculateBasicInstructionsNumber());
+        return expandedProgram.getProgramDetails();
     }
 
     @Override
@@ -130,8 +130,7 @@ public class StandardEngine implements Engine {
 
         runHistoryDetails.add(new RunHistoryDetails(++runNumber, expansionDegree, List.of(input), y, programExecutor.getCyclesNumber()));
 
-        return new ExecutionDetails(new ProgramDetails(runningProgram.getName(), runningProgram.getInputVariables(), runningProgram.getWorkVariables(),
-                runningProgram.getLabels(), runningProgram.getInstructions(), runningProgram.calculateMaxDegree(), runningProgram.calculateBasicInstructionsNumber()), programExecutor.getVariablesContext(), programExecutor.getCyclesNumber());
+        return new ExecutionDetails(runningProgram.getProgramDetails(), programExecutor.getVariablesContext(), programExecutor.getCyclesNumber());
     }
 
     // 5. Show Statistics

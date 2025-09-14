@@ -5,6 +5,7 @@ import components.label.FreeLabelGenerator;
 import components.label.Label;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
+import dtos.InstructionDetails;
 
 import java.io.Serializable;
 import java.util.List;
@@ -27,4 +28,5 @@ public interface Instruction extends Serializable {
     Instruction getAncientInstruction();
     void setAncientInstruction(Instruction ancientInstruction);
     InstructionSemantic.InstructionType getInstructionType();
+    InstructionDetails getInstructionDetails();
 }

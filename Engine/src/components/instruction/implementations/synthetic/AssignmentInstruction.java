@@ -41,9 +41,8 @@ public class AssignmentInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("%s <- %s", variable, assignedVariable.getStringVariable());
 
-        return getInstructionDisplay(command);
+        return String.format("%s <- %s", variable, assignedVariable.getStringVariable());
     }
 
     @Override

@@ -44,9 +44,8 @@ public class JumpEqualConstantInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("IF %s = %d GOTO %s", variable, constantValue, JEConstantLabel.getStringLabel());
 
-        return getInstructionDisplay(command);
+        return String.format("IF %s = %d GOTO %s", variable, constantValue, JEConstantLabel.getStringLabel());
     }
 
     @Override

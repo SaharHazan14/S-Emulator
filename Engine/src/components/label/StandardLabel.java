@@ -1,5 +1,7 @@
 package components.label;
 
+import dtos.LabelDetails;
+
 import java.util.Objects;
 
 public class StandardLabel implements Label {
@@ -17,6 +19,11 @@ public class StandardLabel implements Label {
     @Override
     public int getSerialNumber() {
         return Integer.parseInt(label.substring(1));
+    }
+
+    @Override
+    public LabelDetails getLabelDetails() {
+        return new  LabelDetails(label);
     }
 
     @Override

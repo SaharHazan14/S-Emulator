@@ -36,9 +36,8 @@ public class ConstantAssignmentInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("%s <- %d", variable, constantValue);
 
-        return getInstructionDisplay(command);
+        return String.format("%s <- %d", variable, constantValue);
     }
 
     @Override

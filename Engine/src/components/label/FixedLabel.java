@@ -1,5 +1,7 @@
 package components.label;
 
+import dtos.LabelDetails;
+
 public enum FixedLabel implements Label {
 
     EXIT {
@@ -11,6 +13,11 @@ public enum FixedLabel implements Label {
         @Override
         public int getSerialNumber() {
             return 100;
+        }
+
+        @Override
+        public LabelDetails getLabelDetails() {
+            return new LabelDetails("EXIT");
         }
     },
 
@@ -24,6 +31,11 @@ public enum FixedLabel implements Label {
         public int getSerialNumber() {
             return 0;
         }
+
+        @Override
+        public LabelDetails getLabelDetails() {
+            return new  LabelDetails("EMPTY");
+        }
     };
 
     @Override
@@ -31,5 +43,8 @@ public enum FixedLabel implements Label {
 
     @Override
     public abstract int getSerialNumber();
+
+    @Override
+    public abstract LabelDetails getLabelDetails();
 
 }

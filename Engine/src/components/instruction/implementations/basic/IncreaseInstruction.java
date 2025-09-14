@@ -34,9 +34,8 @@ public class IncreaseInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String command = String.format("%s <- %s + 1", variable, variable);
 
-        return getInstructionDisplay(command);
+        return String.format("%s <- %s + 1", variable, variable);
     }
 
     @Override
