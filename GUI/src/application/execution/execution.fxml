@@ -16,6 +16,7 @@
       <HBox alignment="CENTER" spacing="5.0">
          <children>
             <Button fx:id="stepOverButton" mnemonicParsing="false" onAction="#stepOverButtonAction" text="Step Over" />
+            <Button fx:id="stepBackButton" mnemonicParsing="false" onAction="#stepBackButtonAction" text="Step Back" />
             <Button fx:id="stopDebuggingButton" mnemonicParsing="false" onAction="#stopDebuggingButtonAction" text="Stop" />
             <Button fx:id="resumeButton" mnemonicParsing="false" onAction="#resumeButtonAction" text="Resume" />
             <Button mnemonicParsing="false" onAction="#runButtonAction" text="RUN" />

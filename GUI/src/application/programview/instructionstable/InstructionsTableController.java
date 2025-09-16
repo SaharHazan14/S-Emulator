@@ -1,0 +1,80 @@
+package application.programview.instructionstable;
+
+import application.programview.ProgramViewController;
+import dtos.InstructionDetails;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+
+import java.util.List;
+
+public class InstructionsTableController {
+    ProgramViewController programViewController;
+
+    @FXML
+    private TableView<InstructionDetails> instructionsTableView;
+
+    @FXML
+    private TableColumn<InstructionDetails, Integer> cyclesTableColumn;
+
+    @FXML
+    private TableColumn<InstructionDetails, String> instructionTableColumn;
+
+    @FXML
+    private TableColumn<InstructionDetails, String> labelTableColumn;
+
+    @FXML
+    private TableColumn<InstructionDetails, Integer> numberTableColumn;
+
+    @FXML
+    private TableColumn<InstructionDetails, String> typeTableColumn;
+
+    private final ObservableList<InstructionDetails> instructionsList = FXCollections.observableArrayList();
+
+    @FXML
+    private void initialize() {
+        numberTableColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().ordinalNumber()).asObject());
+        typeTableColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().type().name().toLowerCase()));
+        labelTableColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().label().label()));
+        instructionTableColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().instructionContent()));
+        cyclesTableColumn.setCellValueFactory(cellData ->
+                new SimpleIntegerProperty(cellData.getValue().cycles()).asObject());
+        instructionsTableView.setItems(instructionsList);
+    }
+
+    public void setProgramViewController(ProgramViewController programViewController) {
+        this.programViewController = programViewController;
+    }
+
+    public void initializeTable(List<InstructionDetails> instructions) {
+        instructionsList.clear();
+        instructionsList.addAll(instructions);
+    }
+
+    public void highlightInstructionLine(int index) {
+        instructionsTableView.getSelectionModel().select(index);
+        instructionsTableView.scrollTo(index);
+    }
+
+    public void highlightSign(String sign) {
+        instructionsTableView.getSelectionModel().clearSelection();
+        instructionsTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        for (InstructionDetails instruction : instructionsList) {
+            if (instruction.label().label().equals(sign) || instruction.instructionContent().contains(sign)) {
+                instructionsTableView.getSelectionModel().select(instruction);
+            }
+        }
+    }
+}
+
+
+

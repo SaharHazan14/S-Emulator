@@ -2,7 +2,6 @@ package application;
 
 import application.execution.ExecutionController;
 import application.fileloader.FileLoaderController;
-import application.instructionhistory.InstructionHistoryController;
 import application.programview.ProgramViewController;
 import components.engine.Engine;
 import components.engine.StandardEngine;
@@ -37,12 +36,6 @@ public class ApplicationController {
     private HBox instructionHistoryComponent;
 
     @FXML
-    private InstructionHistoryController instructionHistoryComponentController;
-
-    @FXML
-    private VBox executionComponent;
-
-    @FXML
     private ExecutionController executionComponentController;
 
     private int programDegree;
@@ -60,10 +53,6 @@ public class ApplicationController {
             programViewComponentController.setApplicationController(this);
         }
 
-        if (instructionHistoryComponentController != null) {
-            instructionHistoryComponentController.setApplicationController(this);
-        }
-
         if (executionComponentController != null) {
             executionComponentController.setApplicationController(this);
         }
@@ -71,7 +60,7 @@ public class ApplicationController {
 
     public void loadProgram(File programFile) {
         engine.loadProgramFromFile(programFile);
-        programViewComponentController.initializeProgram(engine.getProgramDetails());
+        programViewComponentController.loadNewProgram(engine.getProgramDetails());
     }
 
     public void expandProgram(int expansionDegree) {
@@ -80,7 +69,7 @@ public class ApplicationController {
     }
 
     public void handleRowDoubleClick(InstructionDetails instruction) {
-        instructionHistoryComponentController.showHistory(instruction);
+        programViewComponentController.loadInstructionHistory(instruction);
     }
 
     public void displayInputVariables(List<VariableDetails> variables) {
@@ -101,7 +90,7 @@ public class ApplicationController {
     }
 
     public void highlightRow(int index) {
-        programViewComponentController.highlightRow(index);
+        programViewComponentController.highlightProgramInstruction(index);
     }
 
 }

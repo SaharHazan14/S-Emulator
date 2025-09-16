@@ -52,6 +52,9 @@ public class ExecutionController {
     private Button resumeButton;
 
     @FXML
+    private Button stepBackButton;
+
+    @FXML
     private Button stepOverButton;
 
     @FXML
@@ -124,6 +127,12 @@ public class ExecutionController {
 
     @FXML
     void resumeButtonAction(ActionEvent event) {
+
+    }
+
+
+    @FXML
+    void stepBackButtonAction(ActionEvent event) {
 
     }
 
