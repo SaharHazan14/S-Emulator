@@ -1,5 +1,6 @@
 package components.engine;
 
+import dtos.DebugDetails;
 import dtos.ExecutionDetails;
 import dtos.ProgramDetails;
 import dtos.RunHistoryDetails;
@@ -17,4 +18,6 @@ public interface Engine extends Serializable {
     ExecutionDetails runProgram(int expansionDegree, Long... input);
     List<RunHistoryDetails> getStatistics();
     boolean isRunning();
+    DebugDetails debugProgram(int expansionDegree, Long... input);
+    DebugDetails debugStepForward();
 }

@@ -6,6 +6,7 @@ import application.instructionhistory.InstructionHistoryController;
 import application.programview.ProgramViewController;
 import components.engine.Engine;
 import components.engine.StandardEngine;
+import dtos.DebugDetails;
 import dtos.ExecutionDetails;
 import dtos.InstructionDetails;
 import dtos.VariableDetails;
@@ -88,6 +89,19 @@ public class ApplicationController {
 
     public ExecutionDetails runProgram(Long... inputs) {
         return engine.runProgram(programDegree, inputs);
+    }
+
+    public DebugDetails startDebuggingProgram(Long... inputs)
+    {
+        return engine.debugProgram(programDegree, inputs);
+    }
+
+    public DebugDetails debuggingStepForward() {
+        return engine.debugStepForward();
+    }
+
+    public void highlightRow(int index) {
+        programViewComponentController.highlightRow(index);
     }
 
 }

@@ -1,5 +1,7 @@
 package components.engine;
 
+import components.debugger.Debugger;
+import components.debugger.StandardDebugger;
 import components.executor.ProgramExecutor;
 import components.jaxb.generated.SInstruction;
 import components.jaxb.generated.SInstructionArgument;
@@ -27,6 +29,8 @@ public class StandardEngine implements Engine {
     private boolean programLoaded = false;
     private int runNumber;
     List<RunHistoryDetails> runHistoryDetails = new ArrayList<>();
+    private Debugger debugger;
+    private boolean debugMode = false;
 
     // 1. Load File
     @Override
@@ -142,5 +146,32 @@ public class StandardEngine implements Engine {
     @Override
     public boolean isRunning() {
         return runNumber > 0;
+    }
+
+    @Override
+    public DebugDetails debugProgram(int expansionDegree, Long... input) {
+        Program runningProgram = program;
+
+        for (int i = 0; i < expansionDegree; i++) {
+            runningProgram = runningProgram.expand();
+        }
+
+        debugger = new StandardDebugger(runningProgram);
+        debugMode = true;
+        return debugger.initializeDebugger(input);
+    }
+
+    @Override
+    public DebugDetails debugStepForward() {
+        if (debugMode) {
+            DebugDetails debugDetails = debugger.stepForward();
+            if (debugDetails.programEnded()) {
+                debugMode = false;
+            }
+
+            return debugDetails;
+        }
+
+        return null;
     }
 }

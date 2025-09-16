@@ -1,6 +1,7 @@
 package application.execution;
 
 import application.ApplicationController;
+import dtos.DebugDetails;
 import dtos.ExecutionDetails;
 import dtos.VariableDetails;
 import javafx.beans.binding.Bindings;
@@ -44,6 +45,18 @@ public class ExecutionController {
 
     private final ObservableList<Map.Entry<VariableDetails, Long>> entryObservableList = FXCollections.observableArrayList();
 
+    @FXML
+    private ToggleButton debugModeToggleButton;
+
+    @FXML
+    private Button resumeButton;
+
+    @FXML
+    private Button stepOverButton;
+
+    @FXML
+    private Button stopDebuggingButton;
+
     public ExecutionController() {
         cyclesConsumedProperty = new SimpleIntegerProperty(0);
     }
@@ -79,10 +92,17 @@ public class ExecutionController {
             }
         }
 
-        ExecutionDetails executionDetails = applicationController.runProgram(inputs);
+        if (debugModeToggleButton.isSelected()) {
+            DebugDetails debugDetails = applicationController.startDebuggingProgram(inputs);
+            entryObservableList.addAll(debugDetails.context().variablesContext());
+            applicationController.highlightRow(debugDetails.lineIndex());
+        }
+        else {
+            ExecutionDetails executionDetails = applicationController.runProgram(inputs);
 
-        entryObservableList.addAll(executionDetails.variablesContext().variablesContext());
-        cyclesConsumedProperty.setValue(executionDetails.cycles());
+            entryObservableList.addAll(executionDetails.variablesContext().variablesContext());
+            cyclesConsumedProperty.setValue(executionDetails.cycles());
+        }
     }
 
     public void setInputVariables(List<VariableDetails> variables) {
@@ -100,6 +120,28 @@ public class ExecutionController {
         }
 
         inputsScrollPane.setContent(container);
+    }
+
+    @FXML
+    void resumeButtonAction(ActionEvent event) {
+
+    }
+
+    @FXML
+    void stepOverButtonAction(ActionEvent event) {
+        DebugDetails debugDetails = applicationController.debuggingStepForward();
+        entryObservableList.clear();
+        entryObservableList.addAll(debugDetails.context().variablesContext());
+        cyclesConsumedProperty.setValue(debugDetails.cycles());
+        applicationController.highlightRow(debugDetails.lineIndex());
+        if (debugDetails.programEnded()) {
+            stepOverButton.setDisable(true);
+        }
+    }
+
+    @FXML
+    void stopDebuggingButtonAction(ActionEvent event) {
+
     }
 }
 

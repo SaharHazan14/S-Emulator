@@ -142,4 +142,9 @@ public class ProgramViewController {
 
     }
 
+    public void highlightRow(int index) {
+        instructionsTableView.getSelectionModel().select(index);
+        instructionsTableView.scrollTo(index);
+    }
+
 }
