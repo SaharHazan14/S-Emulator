@@ -34,7 +34,7 @@ public enum FixedLabel implements Label {
 
         @Override
         public LabelDetails getLabelDetails() {
-            return new  LabelDetails("EMPTY");
+            return new LabelDetails("");
         }
     };
 

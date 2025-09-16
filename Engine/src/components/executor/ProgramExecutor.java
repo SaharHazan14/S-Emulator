@@ -23,8 +23,8 @@ public class ProgramExecutor implements Executor {
     public Long run(Long... input) {
         context = new StandardContext();
         initializeInputVariables(context, input);
+        initializeWorkVariables();
 
-        // Precompute label lookup
         Map<Label, Integer> labelToIndex = new HashMap<>();
         List<Instruction> instructions = program.getInstructions();
         for (int i = 0; i < instructions.size(); i++) {
@@ -50,32 +50,6 @@ public class ProgramExecutor implements Executor {
         }
 
         return context.getVariableValue(Variable.OUTPUT);
-//        context = new StandardContext();
-//        initializeInputVariables(context, input);
-//        int instructionIndex = 0;
-//        Instruction currentInstruction = program.getInstructions().get(instructionIndex++);
-//        Label nextInstructionLabel = FixedLabel.EMPTY;
-//
-//        while (nextInstructionLabel != FixedLabel.EXIT && instructionIndex < program.getInstructions().size()) {
-//            nextInstructionLabel = currentInstruction.execute(context);
-//            cyclesNumber += currentInstruction.getCyclesNumber();
-//
-//            if (nextInstructionLabel == FixedLabel.EMPTY) {
-//                currentInstruction = program.getInstructions().get(instructionIndex++);
-//            } else if (nextInstructionLabel != FixedLabel.EXIT) {
-//                instructionIndex = 0;
-//                for (Instruction instruction : program.getInstructions()) {
-//                    if (nextInstructionLabel.equals(instruction.getLabel())) {
-//                        currentInstruction = instruction;
-//                        instructionIndex++;
-//                        break;
-//                    }
-//                    instructionIndex++;
-//                }
-//            }
-//        }
-//
-//        return context.getVariableValue(Variable.OUTPUT);
     }
 
     @Override
@@ -95,6 +69,12 @@ public class ProgramExecutor implements Executor {
         while (i < inputVariables.size()) {
             context.updateVariableValue(inputVariables.get(i), 0L);
             i++;
+        }
+    }
+
+    private void initializeWorkVariables() {
+        for (Variable var : program.getWorkVariables()) {
+            context.updateVariableValue(var, 0L);
         }
     }
 

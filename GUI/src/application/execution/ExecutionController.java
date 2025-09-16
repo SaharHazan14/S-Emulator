@@ -1,9 +1,10 @@
 package application.execution;
 
 import application.ApplicationController;
-import components.variable.Variable;
 import dtos.ExecutionDetails;
 import dtos.VariableDetails;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -18,40 +19,45 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ExecutionController {
     private ApplicationController applicationController;
 
     @FXML
     private Label cyclesConsumedLabel;
+    private SimpleIntegerProperty cyclesConsumedProperty;
 
     @FXML
     private ScrollPane inputsScrollPane;
 
     @FXML
-    private TableColumn<Map.Entry<Variable, Long>, String> variableNameTableColumn;
+    private TableColumn<Map.Entry<VariableDetails, Long>, String> variableNameTableColumn;
 
     @FXML
-    private TableColumn<Map.Entry<Variable, Long>, Long> variableValueTableColumn;
+    private TableColumn<Map.Entry<VariableDetails, Long>, Long> variableValueTableColumn;
 
     @FXML
-    private TableView<Map.Entry<Variable, Long>> variablesResultTableView;
+    private TableView<Map.Entry<VariableDetails, Long>> variablesResultTableView;
 
     private List<TextField> inputsValues = new ArrayList<>();
 
-    private final ObservableList<Map.Entry<Variable, Long>> entryObservableList = FXCollections.observableArrayList();
+    private final ObservableList<Map.Entry<VariableDetails, Long>> entryObservableList = FXCollections.observableArrayList();
+
+    public ExecutionController() {
+        cyclesConsumedProperty = new SimpleIntegerProperty(0);
+    }
 
     @FXML
     public void initialize() {
         variableNameTableColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getKey().getStringVariable()));
+                new SimpleStringProperty(cellData.getValue().getKey().variable()));
         variableValueTableColumn.setCellValueFactory(cellData ->
                 new SimpleObjectProperty<>(cellData.getValue().getValue()));
 
         variablesResultTableView.setItems(entryObservableList);
+
+        cyclesConsumedLabel.textProperty().bind(Bindings.format("Cycles consumed: %d", cyclesConsumedProperty));
     }
 
     public void setApplicationController(ApplicationController applicationController) {
@@ -65,15 +71,18 @@ public class ExecutionController {
         Long[] inputs = new Long[inputsValues.size()];
 
         for (int i = 0; i < inputsValues.size(); i++) {
-            inputs[i] = Long.parseLong(inputsValues.get(i).getText());
-            // ADD CHECK FOR LONG VALUES ONLY
+            try {
+                inputs[i] = Long.parseLong(inputsValues.get(i).getText());
+            } catch (NumberFormatException e) {
+                inputs[i] = 0L;
+                inputsValues.get(i).setText("0");
+            }
         }
 
         ExecutionDetails executionDetails = applicationController.runProgram(inputs);
 
-        // ADD ITEMS TO TABLE
-        entryObservableList.addAll(executionDetails.variables().getVariables().entrySet());
-
+        entryObservableList.addAll(executionDetails.variablesContext().variablesContext());
+        cyclesConsumedProperty.setValue(executionDetails.cycles());
     }
 
     public void setInputVariables(List<VariableDetails> variables) {
@@ -92,6 +101,5 @@ public class ExecutionController {
 
         inputsScrollPane.setContent(container);
     }
-
 }
 

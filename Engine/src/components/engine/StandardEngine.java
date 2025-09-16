@@ -130,7 +130,7 @@ public class StandardEngine implements Engine {
 
         runHistoryDetails.add(new RunHistoryDetails(++runNumber, expansionDegree, List.of(input), y, programExecutor.getCyclesNumber()));
 
-        return new ExecutionDetails(runningProgram.getProgramDetails(), programExecutor.getVariablesContext(), programExecutor.getCyclesNumber());
+        return new ExecutionDetails(runningProgram.getProgramDetails(), programExecutor.getVariablesContext().getContextDetails(), programExecutor.getCyclesNumber());
     }
 
     // 5. Show Statistics

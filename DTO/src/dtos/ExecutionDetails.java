@@ -2,4 +2,4 @@ package dtos;
 
 import components.executor.Context;
 
-public record ExecutionDetails(ProgramDetails programDetails, Context variables, int cycles) {}
+public record ExecutionDetails(ProgramDetails programDetails, ContextDetails variablesContext, int cycles) {}
