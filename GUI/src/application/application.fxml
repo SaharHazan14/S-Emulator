@@ -2,6 +2,7 @@
 
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.ApplicationController">
@@ -9,10 +10,15 @@
       <fx:include fx:id="fileLoaderComponent" source="fileloader/fileLoader.fxml" />
    </top>
    <center>
-      <SplitPane dividerPositions="0.5" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.5837145471180238" BorderPane.alignment="CENTER">
          <items>
             <fx:include fx:id="programViewComponent" source="programview/programView.fxml" />
-            <fx:include fx:id="executionComponent" source="execution/execution.fxml" />
+            <VBox alignment="CENTER">
+               <children>
+                  <fx:include fx:id="executionComponent" source="execution/execution.fxml" />
+                  <fx:include fx:id="statisticsComponent" source="statistics/statistics.fxml" />
+               </children>
+            </VBox>
          </items>
       </SplitPane>
    </center>

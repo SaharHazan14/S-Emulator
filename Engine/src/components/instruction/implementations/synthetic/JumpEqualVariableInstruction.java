@@ -9,6 +9,7 @@ import components.instruction.implementations.basic.NeutralInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -27,6 +28,14 @@ public class JumpEqualVariableInstruction extends AbstractInstruction {
         super(InstructionSemantic.JUMP_EQUAL_VARIABLE, variable, label);
         this.JEVariableLabel = JEVariableLabel;
         this.variableName = variableName;
+    }
+
+    public Label getJEVariableLabel() {
+        return JEVariableLabel;
+    }
+
+    public Variable getVariableName() {
+        return variableName;
     }
 
     @Override

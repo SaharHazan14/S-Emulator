@@ -10,6 +10,7 @@ import components.instruction.implementations.basic.NeutralInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -28,6 +29,14 @@ public class JumpEqualConstantInstruction extends AbstractInstruction {
         super(InstructionSemantic.JUMP_EQUAL_CONSTANT, variable, label);
         this.JEConstantLabel = JEConstantLabel;
         this.constantValue = constantValue;
+    }
+
+    public Label getJEConstantLabel() {
+        return JEConstantLabel;
+    }
+
+    public int getConstantValue() {
+        return constantValue;
     }
 
     @Override

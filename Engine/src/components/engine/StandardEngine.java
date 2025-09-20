@@ -17,10 +17,7 @@ import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class StandardEngine implements Engine {
     final static String JAXB_XML_PACKAGE_NAME = "components.jaxb.generated";
@@ -132,7 +129,7 @@ public class StandardEngine implements Engine {
         ProgramExecutor programExecutor = new ProgramExecutor(runningProgram);
         Long y = programExecutor.run(input);
 
-        runHistoryDetails.add(new RunHistoryDetails(++runNumber, expansionDegree, List.of(input), y, programExecutor.getCyclesNumber()));
+        runHistoryDetails.add(new RunHistoryDetails(++runNumber, expansionDegree, List.of(input), programExecutor.getVariablesContext().getContextDetails(), programExecutor.getCyclesNumber()));
 
         return new ExecutionDetails(runningProgram.getProgramDetails(), programExecutor.getVariablesContext().getContextDetails(), programExecutor.getCyclesNumber());
     }

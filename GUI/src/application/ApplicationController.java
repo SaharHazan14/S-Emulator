@@ -3,12 +3,10 @@ package application;
 import application.execution.ExecutionController;
 import application.fileloader.FileLoaderController;
 import application.programview.ProgramViewController;
+import application.statistics.StatisticsController;
 import components.engine.Engine;
 import components.engine.StandardEngine;
-import dtos.DebugDetails;
-import dtos.ExecutionDetails;
-import dtos.InstructionDetails;
-import dtos.VariableDetails;
+import dtos.*;
 import javafx.fxml.FXML;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -38,6 +36,12 @@ public class ApplicationController {
     @FXML
     private ExecutionController executionComponentController;
 
+    @FXML
+    private VBox statisticsComponent;
+
+    @FXML
+    private StatisticsController statisticsComponentController;
+
     private int programDegree;
 
     public ApplicationController() {
@@ -56,11 +60,16 @@ public class ApplicationController {
         if (executionComponentController != null) {
             executionComponentController.setApplicationController(this);
         }
+
+        if (statisticsComponentController != null) {
+            statisticsComponentController.setApplicationController(this);
+        }
     }
 
     public void loadProgram(File programFile) {
         engine.loadProgramFromFile(programFile);
         programViewComponentController.loadNewProgram(engine.getProgramDetails());
+        showProgramStatistics();
     }
 
     public void expandProgram(int expansionDegree) {
@@ -77,7 +86,9 @@ public class ApplicationController {
     }
 
     public ExecutionDetails runProgram(Long... inputs) {
-        return engine.runProgram(programDegree, inputs);
+        ExecutionDetails executionDetails = engine.runProgram(programDegree, inputs);
+        showProgramStatistics();
+        return executionDetails;
     }
 
     public DebugDetails startDebuggingProgram(Long... inputs)
@@ -91,6 +102,10 @@ public class ApplicationController {
 
     public void highlightRow(int index) {
         programViewComponentController.highlightProgramInstruction(index);
+    }
+
+    public void showProgramStatistics() {
+        statisticsComponentController.showProgramHistory(engine.getStatistics());
     }
 
 }

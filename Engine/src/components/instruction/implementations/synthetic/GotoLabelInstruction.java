@@ -9,6 +9,7 @@ import components.instruction.implementations.basic.JumpNotZeroInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -25,6 +26,10 @@ public class GotoLabelInstruction extends AbstractInstruction {
     public GotoLabelInstruction(Label gotoLabel, Label label) {
         super(InstructionSemantic.GOTO_LABEL, Variable.EMPTY,  label);
         this.gotoLabel = gotoLabel;
+    }
+
+    public Label getGotoLabel() {
+        return gotoLabel;
     }
 
     @Override

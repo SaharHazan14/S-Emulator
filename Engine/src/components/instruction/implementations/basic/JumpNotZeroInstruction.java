@@ -7,6 +7,7 @@ import components.instruction.InstructionSemantic;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -22,6 +23,10 @@ public class JumpNotZeroInstruction extends AbstractInstruction {
     public JumpNotZeroInstruction(Variable variable, Label JNZLabel, Label label) {
         super(InstructionSemantic.JUMP_NOT_ZERO, variable, label);
         this.JNZLabel = JNZLabel;
+    }
+
+    public Label getJNZLabel() {
+        return JNZLabel;
     }
 
     @Override

@@ -9,6 +9,7 @@ import components.instruction.implementations.basic.NeutralInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -25,6 +26,10 @@ public class JumpZeroInstruction extends AbstractInstruction {
     public JumpZeroInstruction(Variable variable, Label JZLabel, Label label) {
         super(InstructionSemantic.JUMP_ZERO, variable, label);
         this.JZLabel = JZLabel;
+    }
+
+    public Label getJZLabel() {
+        return JZLabel;
     }
 
     @Override

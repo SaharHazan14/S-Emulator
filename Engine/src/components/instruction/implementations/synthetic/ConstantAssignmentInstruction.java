@@ -8,6 +8,7 @@ import components.instruction.implementations.basic.IncreaseInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -24,6 +25,10 @@ public class ConstantAssignmentInstruction extends AbstractInstruction {
     public ConstantAssignmentInstruction(Variable variable, int constantValue, Label label) {
         super(InstructionSemantic.CONSTANT_ASSIGNMENT, variable, label);
         this.constantValue = constantValue;
+    }
+
+    public int getConstantValue() {
+        return constantValue;
     }
 
     @Override

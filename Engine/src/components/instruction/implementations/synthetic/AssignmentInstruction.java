@@ -11,6 +11,7 @@ import components.instruction.implementations.basic.NeutralInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -27,6 +28,10 @@ public class AssignmentInstruction extends AbstractInstruction {
     public AssignmentInstruction(Variable variable, Variable assignedVariable, Label label) {
         super(InstructionSemantic.ASSIGNMENT, variable, label);
         this.assignedVariable = assignedVariable;
+    }
+
+    public Variable getAssignedVariable() {
+        return assignedVariable;
     }
 
     @Override

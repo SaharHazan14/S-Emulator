@@ -6,9 +6,11 @@ import components.instruction.Instruction;
 import components.instruction.InstructionSemantic;
 import components.instruction.implementations.basic.DecreaseInstruction;
 import components.instruction.implementations.basic.JumpNotZeroInstruction;
+import components.instruction.implementations.basic.NeutralInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -42,15 +44,10 @@ public class ZeroVariableInstruction extends AbstractInstruction {
     public List<Instruction> expand(FreeLabelGenerator labelGenerator, FreeWorkVariableGenerator workVariableGenerator) {
         List<Instruction> instructions = new ArrayList<>();
         Variable v = this.getVariable();
-        Label l;
+        Label l = labelGenerator.getNextFreeLabel();
 
-        if (getLabel().equals(FixedLabel.EMPTY)) {
-            l = labelGenerator.getNextFreeLabel();
-        }
-        else {
-            l = getLabel();
-        }
 
+        instructions.add(new NeutralInstruction(v));
         instructions.add(new DecreaseInstruction(v, l));
         instructions.add(new JumpNotZeroInstruction(v, l));
 

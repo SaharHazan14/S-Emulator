@@ -3,6 +3,7 @@ package components.instruction;
 import components.executor.Context;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
+import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 import dtos.InstructionDetails;
