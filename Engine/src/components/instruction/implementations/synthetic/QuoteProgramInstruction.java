@@ -2,6 +2,7 @@ package components.instruction.implementations.synthetic;
 
 import components.executor.Context;
 import components.executor.ProgramExecutor;
+import components.function.Function;
 import components.instruction.AbstractInstruction;
 import components.instruction.Instruction;
 import components.instruction.InstructionSemantic;
@@ -12,7 +13,6 @@ import components.instruction.implementations.basic.NeutralInstruction;
 import components.label.FixedLabel;
 import components.label.FreeLabelGenerator;
 import components.label.Label;
-import components.program.Program;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.Variable;
 
@@ -22,21 +22,31 @@ import java.util.List;
 import java.util.Map;
 
 public class QuoteProgramInstruction extends AbstractInstruction {
-    private final Program functionName;
+    private final String functionName;
     private final List<Variable> functionArguments;
+
+    private Function function;
     private int functionCyclesNumber;
 
-    public QuoteProgramInstruction(Variable variable, Program functionName, List<Variable> functionArguments) {
+    public QuoteProgramInstruction(Variable variable, String functionName, List<Variable> functionArguments) {
         this(variable, functionName, functionArguments, FixedLabel.EMPTY);
     }
 
-    public QuoteProgramInstruction(Variable variable, Program functionName, List<Variable> functionArguments, Label label) {
+    public QuoteProgramInstruction(Variable variable, String functionName, List<Variable> functionArguments, Label label) {
         super(InstructionSemantic.QUOTE, variable, label);
         this.functionName = functionName;
         this.functionArguments = functionArguments;
     }
 
-    public Program getFunctionName() {
+    public Function getFunction() {
+        return function;
+    }
+
+    public void setFunction(Function function) {
+        this.function = function;
+    }
+
+    public String getFunctionName() {
         return functionName;
     }
 
@@ -47,65 +57,78 @@ public class QuoteProgramInstruction extends AbstractInstruction {
     @Override
     public String getStringInstruction() {
         String variable = this.getVariable().getStringVariable();
-        String function = functionName.getName();
 
         StringBuilder arguments = new StringBuilder();
         for (Variable argument : functionArguments) {
             arguments.append(",").append(argument.getStringVariable());
         }
 
-        return String.format("%s <- (%s%s)",  variable, function, arguments.toString());
+        return String.format("%s <- (%s%s)",  variable, function.getUserString(), arguments);
     }
 
     @Override
     public Label execute(Context context) {
-        ProgramExecutor programExecutor = new ProgramExecutor(functionName);
+        if (function != null) {
+            ProgramExecutor programExecutor = new ProgramExecutor(function);
+            Long[] inputs = new Long[functionArguments.size()];
+            for (int i = 0; i < functionArguments.size(); i++) {
+                inputs[i] = context.getVariableValue(functionArguments.get(i));
+            }
 
-        Long[] inputs = new Long[functionArguments.size()];
-        for(int i = 0; i < functionArguments.size(); i++) {
-            inputs[i] = context.getVariableValue(functionArguments.get(i));
+            Long result = programExecutor.run(inputs);
+            functionCyclesNumber = programExecutor.getCyclesNumber();
+            context.updateVariableValue(this.getVariable(), result);
+
+            return FixedLabel.EMPTY;
         }
-        Long result = programExecutor.run(inputs);
-        functionCyclesNumber = programExecutor.getCyclesNumber();
-        context.updateVariableValue(this.getVariable(), result);
-
-        return FixedLabel.EMPTY;
+        else {
+            throw new NullPointerException("Function is null");
+        }
     }
 
     @Override
     public List<Instruction> expand(FreeLabelGenerator labelGenerator, FreeWorkVariableGenerator workVariableGenerator) {
-        List<Instruction> instructions = new ArrayList<>();
-        Map<Variable, Variable> variablesMap = mapFunctionVarsToProgramVars(workVariableGenerator);
-        Map<Label, Label> labelsMap = mapFunctionLabelsToProgramLabels(labelGenerator);
-        Label thisInstructionLabel = this.getLabel();
+        if (function != null) {
+            List<Instruction> instructions = new ArrayList<>();
+            Map<Variable, Variable> variablesMap = mapFunctionVarsToProgramVars(workVariableGenerator);
+            Map<Label, Label> labelsMap = mapFunctionLabelsToProgramLabels(labelGenerator);
+            Label thisInstructionLabel = this.getLabel();
 
-        instructions.add(new NeutralInstruction(Variable.OUTPUT, thisInstructionLabel));
+            instructions.add(new NeutralInstruction(Variable.OUTPUT, thisInstructionLabel));
 
-        for (int i = 0; i < functionArguments.size(); i++) {
-            Variable z = variablesMap.get(functionName.getInputVariables().get(i));
-            instructions.add(new AssignmentInstruction(z, functionArguments.get(i)));
+            for (int i = 0; i < functionArguments.size(); i++) {
+                Variable z = variablesMap.get(function.getInputVariables().get(i));
+                instructions.add(new AssignmentInstruction(z, functionArguments.get(i)));
+            }
+
+            for (Instruction functionInstruction : function.getInstructions()) {
+                instructions.add(getAlternativeInstruction(functionInstruction, variablesMap, labelsMap));
+            }
+
+            instructions.add(new AssignmentInstruction(this.getVariable(),
+                    variablesMap.get(Variable.OUTPUT),
+                    labelsMap.get(FixedLabel.EXIT)));
+
+            for (Instruction instruction : instructions) {
+                instruction.setAncientInstruction(this);
+            }
+
+            return instructions;
         }
-
-        for (Instruction functionInstruction : functionName.getInstructions()) {
-            instructions.add(getAlternativeInstruction(functionInstruction, variablesMap, labelsMap));
+        else {
+            throw new NullPointerException("Function is null");
         }
-
-        instructions.add(new AssignmentInstruction(this.getVariable(),
-                variablesMap.get(Variable.OUTPUT),
-                labelsMap.get(FixedLabel.EXIT)));
-
-        return instructions;
     }
 
     private Map<Variable, Variable> mapFunctionVarsToProgramVars(FreeWorkVariableGenerator workVariableGenerator) {
         Map<Variable, Variable> resultMap = new HashMap<>();
 
-        for (Variable functionInputVar : functionName.getInputVariables()) {
+        for (Variable functionInputVar : function.getInputVariables()) {
             Variable programFreeWorkVar = workVariableGenerator.getNextFreeWorkVariable();
             resultMap.put(functionInputVar, programFreeWorkVar);
         }
 
-        for (Variable functionWorkVar : functionName.getWorkVariables()) {
+        for (Variable functionWorkVar : function.getWorkVariables()) {
             Variable programFreeWorkVar = workVariableGenerator.getNextFreeWorkVariable();
             resultMap.put(functionWorkVar, programFreeWorkVar);
         }
@@ -119,7 +142,7 @@ public class QuoteProgramInstruction extends AbstractInstruction {
     private Map<Label, Label> mapFunctionLabelsToProgramLabels(FreeLabelGenerator labelGenerator) {
         Map<Label, Label> resultMap = new HashMap<>();
 
-        for (Label functionLabel : functionName.getLabels()) {
+        for (Label functionLabel : function.getLabels()) {
             Label programLabel = labelGenerator.getNextFreeLabel();
             resultMap.put(functionLabel, programLabel);
         }
@@ -174,8 +197,16 @@ public class QuoteProgramInstruction extends AbstractInstruction {
                         variablesMap.get(jumpEqualVariableInstruction.getVariableName()), alternativeLabel);
             }
             case QuoteProgramInstruction quoteProgramInstruction -> {
-                return new QuoteProgramInstruction(alternativeVariable, quoteProgramInstruction.getFunctionName(),
+                QuoteProgramInstruction result = new QuoteProgramInstruction(alternativeVariable, quoteProgramInstruction.getFunctionName(),
                         quoteProgramInstruction.getFunctionArguments(), alternativeLabel);
+                result.setFunction(quoteProgramInstruction.getFunction());
+                return result;
+            }
+            case JumpEqualFunctionInstruction jumpEqualFunctionInstruction -> {
+                JumpEqualFunctionInstruction result = new JumpEqualFunctionInstruction(alternativeVariable, labelsMap.get(jumpEqualFunctionInstruction.getJEFunctionLabel()),
+                        jumpEqualFunctionInstruction.getFunctionName(), jumpEqualFunctionInstruction.getFunctionArguments(), alternativeLabel);
+                result.setFunction(jumpEqualFunctionInstruction.getFunction());
+                return result;
             }
             default -> {
             return null;
@@ -190,6 +221,6 @@ public class QuoteProgramInstruction extends AbstractInstruction {
 
     @Override
     public int getDegree() {
-        return super.getDegree() + functionName.calculateMaxDegree();
+        return super.getDegree() + function.calculateMaxDegree();
     }
 }

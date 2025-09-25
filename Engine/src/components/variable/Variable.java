@@ -2,9 +2,7 @@ package components.variable;
 
 import dtos.VariableDetails;
 
-import java.io.Serializable;
-
-public interface Variable extends Serializable {
+public interface Variable {
     String getStringVariable();
     StandardVariable.VariableType getVariableType();
     int getSerialNumber();

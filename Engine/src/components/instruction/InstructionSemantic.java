@@ -13,6 +13,7 @@ public enum InstructionSemantic {
     JUMP_EQUAL_CONSTANT("JUMP_EQUAL_CONSTANT", 2, InstructionType.SYNTHETIC, 3),
     JUMP_EQUAL_VARIABLE("JUMP_EQUAL_VARIABLE", 2, InstructionType.SYNTHETIC, 3),
     QUOTE("QUOTE", 5, InstructionType.SYNTHETIC, 1),
+    JUMP_EQUAL_FUNCTION("JUMP_EQUAL_FUNCTION", 6, InstructionType.SYNTHETIC, 2),
     ;
 
     public enum InstructionType {

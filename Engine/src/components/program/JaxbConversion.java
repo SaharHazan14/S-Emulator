@@ -1,15 +1,14 @@
 package components.program;
 
+import components.function.Function;
+import components.function.FunctionFactory;
 import components.instruction.Instruction;
 import components.instruction.implementations.basic.DecreaseInstruction;
 import components.instruction.implementations.basic.IncreaseInstruction;
 import components.instruction.implementations.basic.JumpNotZeroInstruction;
 import components.instruction.implementations.basic.NeutralInstruction;
 import components.instruction.implementations.synthetic.*;
-import components.jaxb.generated.SInstruction;
-import components.jaxb.generated.SInstructionArgument;
-import components.jaxb.generated.SInstructionArguments;
-import components.jaxb.generated.SProgram;
+import components.jaxb.generated.*;
 import components.label.FixedLabel;
 import components.label.Label;
 import components.label.StandardLabel;
@@ -17,17 +16,90 @@ import components.variable.StandardVariable;
 import components.variable.Variable;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JaxbConversion {
+
     public static Program SProgramToProgram(SProgram sProgram) {
         Program program = new StandardProgram(sProgram.getName());
+        FunctionFactory functionFactory = new FunctionFactory();
 
-        for (SInstruction sInstruction: sProgram.getSInstructions().getSInstruction()) {
+        if (sProgram.getSFunctions() != null) {
+            for (SFunction sFunction : sProgram.getSFunctions().getSFunction()) {
+                Function function = SFunctionToFunction(sFunction);
+                functionFactory.addFunction(function);
+            }
+        }
+
+        for (SInstruction sInstruction : sProgram.getSInstructions().getSInstruction()) {
             program.addInstruction(SInstructionToInstruction(sInstruction));
         }
-        
+
+        initializeFunctions(functionFactory, program);
+
+        for (Function function : functionFactory.getFunctions()) {
+            program.addFunction(function);
+        }
+
         return program;
+    }
+
+    private static void initializeFunctions(FunctionFactory functionFactory, Program program) {
+        // may add check for null pointer
+        for (Function function : functionFactory.getFunctions()) {
+            for (Instruction instruction : function.getInstructions()) {
+                if (instruction instanceof QuoteProgramInstruction quoteProgramInstruction) {
+                    Function quotedFunction = functionFactory.getFunction(quoteProgramInstruction.getFunctionName());
+                    if (quotedFunction != null) {
+                        quoteProgramInstruction.setFunction(quotedFunction);
+                    }
+                    else {
+                        throw new RuntimeException("Function " + quoteProgramInstruction.getFunctionName() + " not found.");
+                    }
+                }
+                else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
+                    Function quotedFunction = functionFactory.getFunction(jumpEqualFunctionInstruction.getFunctionName());
+                    if (quotedFunction != null) {
+                        jumpEqualFunctionInstruction.setFunction(quotedFunction);
+                    }
+                    else {
+                        throw new RuntimeException("Function " + jumpEqualFunctionInstruction.getFunctionName() + " not found.");
+                    }
+                }
+            }
+        }
+
+        for (Instruction instruction : program.getInstructions()) {
+            if (instruction instanceof QuoteProgramInstruction quoteProgramInstruction) {
+                Function quotedFunction = functionFactory.getFunction(quoteProgramInstruction.getFunctionName());
+                if (quotedFunction != null) {
+                    quoteProgramInstruction.setFunction(quotedFunction);
+                }
+                else {
+                    throw new RuntimeException("Function " + quoteProgramInstruction.getFunctionName() + " not found.");
+                }
+            }
+            else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
+                Function quotedFunction = functionFactory.getFunction(jumpEqualFunctionInstruction.getFunctionName());
+                if (quotedFunction != null) {
+                    jumpEqualFunctionInstruction.setFunction(quotedFunction);
+                }
+                else {
+                    throw new RuntimeException("Function " + jumpEqualFunctionInstruction.getFunctionName() + " not found.");
+                }
+            }
+        }
+    }
+
+    private static Function SFunctionToFunction(SFunction sFunction) {
+        Function function = new Function(sFunction.getName(), sFunction.getUserString());
+        for (SInstruction sInstruction : sFunction.getSInstructions().getSInstruction()) {
+            function.addInstruction(SInstructionToInstruction(sInstruction));
+        }
+
+        return function;
     }
 
     private static Instruction SInstructionToInstruction(SInstruction sInstruction) {
@@ -35,8 +107,7 @@ public class JaxbConversion {
         Label instructionLabel = SLabelToLabel(sInstruction.getSLabel());
         SInstructionArguments sInstructionArguments = sInstruction.getSInstructionArguments();
         List<SInstructionArgument> argumentsList = new ArrayList<>();
-        if (sInstructionArguments != null)
-        {
+        if (sInstructionArguments != null) {
             argumentsList = sInstructionArguments.getSInstructionArgument();
         }
 
@@ -49,7 +120,7 @@ public class JaxbConversion {
             }
             case "JUMP_NOT_ZERO" -> {
                 Label JNZLabel = SLabelToLabel(argumentsList.getFirst().getValue());
-                return new JumpNotZeroInstruction(instructionVariable,  JNZLabel, instructionLabel);
+                return new JumpNotZeroInstruction(instructionVariable, JNZLabel, instructionLabel);
             }
             case "NEUTRAL" -> {
                 return new NeutralInstruction(instructionVariable, instructionLabel);
@@ -82,6 +153,17 @@ public class JaxbConversion {
                 Label JEVariableLabel = SLabelToLabel(argumentsList.getFirst().getValue());
                 Variable variableName = SVariableToVariable(argumentsList.get(1).getValue());
                 return new JumpEqualVariableInstruction(instructionVariable, JEVariableLabel, variableName, instructionLabel);
+            }
+            case "QUOTE" -> {
+                String functionName = argumentsList.getFirst().getValue();
+                List<Variable> functionsArguments = parseStringVariables(argumentsList.get(1).getValue());
+                return new QuoteProgramInstruction(instructionVariable, functionName, functionsArguments, instructionLabel);
+            }
+            case "JUMP_EQUAL_FUNCTION" -> {
+                Label JEFunctionLabel = SLabelToLabel(argumentsList.getFirst().getValue());
+                String functionName = argumentsList.get(1).getValue();
+                List<Variable> functionsArguments = parseStringVariables(argumentsList.get(2).getValue());
+                return new JumpEqualFunctionInstruction(instructionVariable, JEFunctionLabel, functionName, functionsArguments, instructionLabel);
             }
             default -> throw new RuntimeException("Unknown instruction: " + sInstruction.getName());
         }
@@ -121,4 +203,20 @@ public class JaxbConversion {
 
         return new StandardLabel(Integer.parseInt(sLabel.substring(1)));
     }
+
+    private static List<Variable> parseStringVariables(String stringVariables) {
+        List<Variable> variables = new ArrayList<>();
+        if (stringVariables.isEmpty()) {
+            return variables;
+        }
+
+        String[] variablesArray = stringVariables.split(",");
+        for (String variable : variablesArray) {
+            variables.add(SVariableToVariable(variable));
+        }
+
+        return variables;
+    }
 }
+
+

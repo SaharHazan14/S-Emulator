@@ -3,13 +3,13 @@ package components.engine;
 import components.debugger.Debugger;
 import components.debugger.StandardDebugger;
 import components.executor.ProgramExecutor;
+import components.function.Function;
+import components.jaxb.generated.SFunction;
 import components.jaxb.generated.SInstruction;
 import components.jaxb.generated.SInstructionArgument;
 import components.jaxb.generated.SProgram;
-import components.label.Label;
 import components.program.JaxbConversion;
 import components.program.Program;
-import components.variable.Variable;
 import dtos.*;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Unmarshaller;
@@ -37,7 +37,6 @@ public class StandardEngine implements Engine {
             jumpLabelsAreValid(sProgram);
             program = JaxbConversion.SProgramToProgram(sProgram);
             programLoaded = true;
-
             runNumber = 0;
             runHistoryDetails = new ArrayList<>();
         } catch (RuntimeException e) {

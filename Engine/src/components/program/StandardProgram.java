@@ -1,5 +1,6 @@
 package components.program;
 
+import components.function.Function;
 import components.instruction.Instruction;
 import components.instruction.InstructionSemantic;
 import components.label.FixedLabel;
@@ -20,11 +21,13 @@ import java.util.List;
 public class StandardProgram implements Program {
     private final String name;
     private final List<Instruction> instructions;
+    private final List<Function> functions;
     private int nextInstructionNumber;
 
     public StandardProgram(String name) {
         this.name = name;
         this.instructions = new ArrayList<>();
+        this.functions = new ArrayList<>();
     }
 
     @Override
@@ -193,5 +196,10 @@ public class StandardProgram implements Program {
 
         return new ProgramDetails(name, inputVariables, workVariables, labels, instructions,
                 calculateMaxDegree(), calculateBasicInstructionsNumber());
+    }
+
+    @Override
+    public void addFunction(Function function) {
+        functions.add(function);
     }
 }

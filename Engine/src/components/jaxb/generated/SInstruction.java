@@ -7,7 +7,12 @@
 
 package components.jaxb.generated;
 
-import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
@@ -46,6 +51,8 @@ import jakarta.xml.bind.annotation.*;
  *             <enumeration value="JUMP_ZERO"/>
  *             <enumeration value="JUMP_EQUAL_CONSTANT"/>
  *             <enumeration value="JUMP_EQUAL_VARIABLE"/>
+ *             <enumeration value="QUOTE"/>
+ *             <enumeration value="JUMP_EQUAL_FUNCTION"/>
  *           </restriction>
  *         </simpleType>
  *       </attribute>

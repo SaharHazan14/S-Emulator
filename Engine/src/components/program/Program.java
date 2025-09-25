@@ -1,5 +1,6 @@
 package components.program;
 
+import components.function.Function;
 import components.instruction.Instruction;
 import components.label.Label;
 import components.variable.Variable;
@@ -16,6 +17,7 @@ public interface Program extends Serializable {
     List<Instruction> getInstructions();
 
     void addInstruction(Instruction instruction);
+    void addFunction(Function function);
     int calculateMaxDegree();
     int getNextFreeLabelNumber();
     int getNextFreeWorkVariableNumber();
