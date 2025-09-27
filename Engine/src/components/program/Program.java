@@ -26,4 +26,5 @@ public interface Program extends Serializable {
 
     int calculateBasicInstructionsNumber();
     ProgramDetails getProgramDetails();
+    public List<Function> getFunctions();
 }

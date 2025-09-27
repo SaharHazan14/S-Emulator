@@ -1,5 +1,7 @@
 package components.instruction.implementations.synthetic;
 
+import components.argument.Argument;
+import components.argument.FunctionArgument;
 import components.executor.Context;
 import components.executor.ProgramExecutor;
 import components.function.Function;
@@ -23,16 +25,16 @@ import java.util.Map;
 
 public class QuoteProgramInstruction extends AbstractInstruction {
     private final String functionName;
-    private final List<Variable> functionArguments;
+    private final List<Argument> functionArguments;
 
     private Function function;
     private int functionCyclesNumber;
 
-    public QuoteProgramInstruction(Variable variable, String functionName, List<Variable> functionArguments) {
+    public QuoteProgramInstruction(Variable variable, String functionName, List<Argument> functionArguments) {
         this(variable, functionName, functionArguments, FixedLabel.EMPTY);
     }
 
-    public QuoteProgramInstruction(Variable variable, String functionName, List<Variable> functionArguments, Label label) {
+    public QuoteProgramInstruction(Variable variable, String functionName, List<Argument> functionArguments, Label label) {
         super(InstructionSemantic.QUOTE, variable, label);
         this.functionName = functionName;
         this.functionArguments = functionArguments;
@@ -50,7 +52,7 @@ public class QuoteProgramInstruction extends AbstractInstruction {
         return functionName;
     }
 
-    public List<Variable> getFunctionArguments() {
+    public List<Argument> getFunctionArguments() {
         return functionArguments;
     }
 
@@ -59,8 +61,8 @@ public class QuoteProgramInstruction extends AbstractInstruction {
         String variable = this.getVariable().getStringVariable();
 
         StringBuilder arguments = new StringBuilder();
-        for (Variable argument : functionArguments) {
-            arguments.append(",").append(argument.getStringVariable());
+        for (Argument argument : functionArguments) {
+            arguments.append(",").append(argument.getStringArgument());
         }
 
         return String.format("%s <- (%s%s)",  variable, function.getUserString(), arguments);
@@ -72,7 +74,7 @@ public class QuoteProgramInstruction extends AbstractInstruction {
             ProgramExecutor programExecutor = new ProgramExecutor(function);
             Long[] inputs = new Long[functionArguments.size()];
             for (int i = 0; i < functionArguments.size(); i++) {
-                inputs[i] = context.getVariableValue(functionArguments.get(i));
+                inputs[i] = functionArguments.get(i).evaluate(context);
             }
 
             Long result = programExecutor.run(inputs);
@@ -96,9 +98,20 @@ public class QuoteProgramInstruction extends AbstractInstruction {
 
             instructions.add(new NeutralInstruction(Variable.OUTPUT, thisInstructionLabel));
 
-            for (int i = 0; i < functionArguments.size(); i++) {
-                Variable z = variablesMap.get(function.getInputVariables().get(i));
-                instructions.add(new AssignmentInstruction(z, functionArguments.get(i)));
+            if (!function.getInputVariables().isEmpty()) {
+                for (int i = 0; i < functionArguments.size(); i++) {
+                    Variable z = variablesMap.get(function.getInputVariables().get(i));
+                    if (functionArguments.get(i) instanceof Variable variable) {
+                        instructions.add(new AssignmentInstruction(z, variable));
+                    } else {
+                        FunctionArgument functionArgument = (FunctionArgument) functionArguments.get(i);
+                        QuoteProgramInstruction quoteProgramInstruction = new QuoteProgramInstruction
+                                (z, functionArgument.getFunctionName(), functionArgument.getArguments());
+                        quoteProgramInstruction.setFunction(functionArgument.getFunction());
+                        instructions.add(quoteProgramInstruction);
+
+                    }
+                }
             }
 
             for (Instruction functionInstruction : function.getInstructions()) {
@@ -221,6 +234,23 @@ public class QuoteProgramInstruction extends AbstractInstruction {
 
     @Override
     public int getDegree() {
-        return super.getDegree() + function.calculateMaxDegree();
+        int maxDegree = function.calculateMaxDegree();
+
+        for (Argument argument : functionArguments) {
+            if (argument instanceof FunctionArgument functionArgument) {
+                maxDegree = Math.max(maxDegree, functionArgument.calculateFunctionMaxDegree());
+            }
+        }
+        return super.getDegree() + maxDegree;
+    }
+
+    @Override
+    public List<Variable> getAllInvolvedVariables() {
+        List<Variable> variables = new ArrayList<>();
+        for (Argument argument : functionArguments) {
+            variables.addAll(argument.getVariable());
+        }
+
+        return variables;
     }
 }

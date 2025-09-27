@@ -3,10 +3,7 @@ package application.programview;
 import application.ApplicationController;
 import application.programview.instructionstable.InstructionsTableController;
 import components.variable.Variable;
-import dtos.InstructionDetails;
-import dtos.LabelDetails;
-import dtos.ProgramDetails;
-import dtos.VariableDetails;
+import dtos.*;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
 import javafx.event.ActionEvent;
@@ -47,6 +44,9 @@ public class ProgramViewController {
     @FXML
     private ComboBox<String> highlightComboBox;
 
+    @FXML
+    private ComboBox<String> chooseProgramComboBox;
+
     private final SimpleBooleanProperty noProgramLoadedProperty;
 
     public ProgramViewController() {
@@ -82,6 +82,7 @@ public class ProgramViewController {
 
         selectedDegreeComboBox.setPromptText("Degree");
         highlightComboBox.setPromptText("Highlight");
+        chooseProgramComboBox.setPromptText("Program");
 
         currentDegreeProperty.setValue(0);
         currentDegreeLabel.textProperty().bind(Bindings.format("%d / %d", currentDegreeProperty,  maxDegreeProperty));
@@ -89,7 +90,7 @@ public class ProgramViewController {
         summaryLineLabel.textProperty().bind(Bindings.format("Instructions Summery: Basic - %d / Synthetic - %d", basicInstructionsProperty, syntheticInstructionsProperty));
         selectedDegreeComboBox.disableProperty().bind(maxDegreeProperty.isEqualTo(0));
         highlightComboBox.disableProperty().bind(noProgramLoadedProperty);
-
+        chooseProgramComboBox.disableProperty().bind(noProgramLoadedProperty);
     }
 
     public void setApplicationController(ApplicationController applicationController) {
@@ -98,17 +99,40 @@ public class ProgramViewController {
 
     @FXML
     void selectedDegreeComboBoxAction(ActionEvent event) {
-        int selectedDegree = selectedDegreeComboBox.getValue();
-        applicationController.expandProgram(selectedDegree);
+        if (selectedDegreeComboBox.getValue() != null) {
+            applicationController.expandProgram(selectedDegreeComboBox.getValue());
+        }
     }
 
     @FXML
     void highlightComboBoxAction(ActionEvent event) {
-        String signToHighlight = highlightComboBox.getValue();
-        programInstructionsComponentController.highlightSign(signToHighlight);
+        if (highlightComboBox.getValue() != null) {
+            programInstructionsComponentController.highlightSign(highlightComboBox.getValue());
+        }
+    }
+
+    @FXML
+    void chooseProgramComboBoxAction(ActionEvent event) {
+        if (chooseProgramComboBox.getValue() != null) {
+            applicationController.setCurrentProgram(chooseProgramComboBox.getValue());
+        }
     }
 
     public void loadNewProgram(ProgramDetails programDetails) {
+        programInstructionsComponentController.initializeTable(programDetails.instructions());
+
+        initializeSelectedDegreeComboBox(programDetails.maxDegree());
+        initializeHighlightComboBox(programDetails);
+        initializeChooseProgramComboBox(programDetails);
+        currentDegreeProperty.set(0);
+        maxDegreeProperty.set(programDetails.maxDegree());
+        basicInstructionsProperty.setValue(programDetails.basicInstructionsNumber());
+        syntheticInstructionsProperty.setValue(programDetails.instructions().size() - basicInstructionsProperty.getValue());
+        noProgramLoadedProperty.setValue(false);
+        applicationController.displayInputVariables(programDetails.inputVariables());
+    }
+
+    public void displayNewProgram(ProgramDetails programDetails) {
         programInstructionsComponentController.initializeTable(programDetails.instructions());
 
         initializeSelectedDegreeComboBox(programDetails.maxDegree());
@@ -122,6 +146,7 @@ public class ProgramViewController {
     }
 
     private void initializeSelectedDegreeComboBox(int max) {
+        selectedDegreeComboBox.setPromptText("Degree");
         selectedDegreeComboBox.getItems().clear();
         for (int i = 0; i <= max; i++) {
             selectedDegreeComboBox.getItems().add(i);
@@ -129,6 +154,7 @@ public class ProgramViewController {
     }
 
     private void initializeHighlightComboBox(ProgramDetails programDetails) {
+        highlightComboBox.setPromptText("Highlight");
         highlightComboBox.getItems().clear();
 
         for (LabelDetails label : programDetails.labels()) {
@@ -142,6 +168,16 @@ public class ProgramViewController {
         }
         for (VariableDetails zVar : programDetails.workVariables()) {
             highlightComboBox.getItems().add(zVar.variable());
+        }
+    }
+
+    private void initializeChooseProgramComboBox(ProgramDetails programDetails) {
+        chooseProgramComboBox.setPromptText("Program");
+        chooseProgramComboBox.getItems().clear();
+
+        chooseProgramComboBox.getItems().add(programDetails.name());
+        for (FunctionDetails function: programDetails.functions()) {
+            chooseProgramComboBox.getItems().add(function.userString());
         }
     }
 
@@ -160,5 +196,9 @@ public class ProgramViewController {
 
     public void highlightProgramInstruction(int index) {
         programInstructionsComponentController.highlightInstructionLine(index);
+    }
+
+    public void unhighlightInstructions() {
+        programInstructionsComponentController.unhighlight();
     }
 }

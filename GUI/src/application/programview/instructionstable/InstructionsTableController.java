@@ -11,6 +11,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class InstructionsTableController {
@@ -69,10 +70,15 @@ public class InstructionsTableController {
         instructionsTableView.getSelectionModel().clearSelection();
         instructionsTableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         for (InstructionDetails instruction : instructionsList) {
-            if (instruction.label().label().equals(sign) || instruction.instructionContent().contains(sign)) {
+            String[] cells = instruction.instructionContent().split(" ");
+            if (instruction.label().label().equals(sign) || Arrays.asList(cells).contains(sign)) {
                 instructionsTableView.getSelectionModel().select(instruction);
             }
         }
+    }
+
+    public void unhighlight() {
+        instructionsTableView.getSelectionModel().clearSelection();
     }
 }
 

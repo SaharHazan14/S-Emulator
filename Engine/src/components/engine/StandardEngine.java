@@ -29,6 +29,8 @@ public class StandardEngine implements Engine {
     private Debugger debugger;
     private boolean debugMode = false;
 
+    private Program currentProgram;
+
     // 1. Load File
     @Override
     public void loadProgramFromFile(File file) {
@@ -36,6 +38,7 @@ public class StandardEngine implements Engine {
         try {
             jumpLabelsAreValid(sProgram);
             program = JaxbConversion.SProgramToProgram(sProgram);
+            currentProgram = program;
             programLoaded = true;
             runNumber = 0;
             runHistoryDetails = new ArrayList<>();
@@ -96,13 +99,13 @@ public class StandardEngine implements Engine {
     // 2. Show Program
     @Override
     public ProgramDetails getProgramDetails() {
-        return program.getProgramDetails();
+        return currentProgram.getProgramDetails();
     }
 
     // 3. Expand Program
     @Override
     public ProgramDetails expandProgram(int expansionDegree) {
-        Program expandedProgram = program;
+        Program expandedProgram = currentProgram;
 
         for (int i = 0; i < expansionDegree; i++) {
             expandedProgram = expandedProgram.expand();
@@ -113,13 +116,13 @@ public class StandardEngine implements Engine {
 
     @Override
     public int getProgramMaxDegree() {
-        return program.calculateMaxDegree();
+        return currentProgram.calculateMaxDegree();
     }
 
     // 4. Run Program
     @Override
     public ExecutionDetails runProgram(int expansionDegree, Long... input) {
-        Program runningProgram = program;
+        Program runningProgram = currentProgram;
 
         for (int i = 0; i < expansionDegree; i++) {
             runningProgram = runningProgram.expand();
@@ -146,7 +149,7 @@ public class StandardEngine implements Engine {
 
     @Override
     public DebugDetails debugProgram(int expansionDegree, Long... input) {
-        Program runningProgram = program;
+        Program runningProgram = currentProgram;
 
         for (int i = 0; i < expansionDegree; i++) {
             runningProgram = runningProgram.expand();
@@ -169,5 +172,33 @@ public class StandardEngine implements Engine {
         }
 
         return null;
+    }
+
+    @Override
+    public DebugDetails debugResume() {
+        if (debugMode) {
+            DebugDetails debugDetails = debugger.resume();
+            if (debugDetails.programEnded()) {
+                debugMode = false;
+            }
+
+            return debugDetails;
+        }
+
+        return null;
+    }
+
+    @Override
+    public void setCurrentProgram(String programName) {
+        if (programName.equals(program.getName())) {
+            currentProgram = program;
+        }
+        else {
+            for (Function function : program.getFunctions()) {
+                if (function.getUserString().equals(programName)) {
+                    currentProgram = function;
+                }
+            }
+        }
     }
 }

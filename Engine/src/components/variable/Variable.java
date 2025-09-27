@@ -1,8 +1,9 @@
 package components.variable;
 
+import components.argument.Argument;
 import dtos.VariableDetails;
 
-public interface Variable {
+public interface Variable extends Argument {
     String getStringVariable();
     StandardVariable.VariableType getVariableType();
     int getSerialNumber();

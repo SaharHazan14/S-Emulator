@@ -3,6 +3,7 @@ package components.variable;
 import components.executor.Context;
 import dtos.VariableDetails;
 
+import java.util.List;
 import java.util.Objects;
 
 public class StandardVariable implements Variable {
@@ -52,5 +53,20 @@ public class StandardVariable implements Variable {
     @Override
     public int hashCode() {
         return Objects.hash(variableType, serialNumber);
+    }
+
+    @Override
+    public Long evaluate(Context context) {
+        return context.getVariableValue(this);
+    }
+
+    @Override
+    public String getStringArgument() {
+        return getStringVariable();
+    }
+
+    @Override
+    public List<Variable> getVariable() {
+        return List.of(this);
     }
 }

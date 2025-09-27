@@ -5,6 +5,7 @@ import dtos.DebugDetails;
 import dtos.ExecutionDetails;
 import dtos.VariableDetails;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -60,8 +61,11 @@ public class ExecutionController {
     @FXML
     private Button stopDebuggingButton;
 
+    private SimpleBooleanProperty runOnProperty;
+
     public ExecutionController() {
         cyclesConsumedProperty = new SimpleIntegerProperty(0);
+        runOnProperty = new SimpleBooleanProperty(false);
     }
 
     @FXML
@@ -72,7 +76,10 @@ public class ExecutionController {
                 new SimpleObjectProperty<>(cellData.getValue().getValue()));
 
         variablesResultTableView.setItems(entryObservableList);
-
+        stepBackButton.disableProperty().bind(debugModeToggleButton.selectedProperty().not().or(runOnProperty.not()));
+        stepOverButton.disableProperty().bind(debugModeToggleButton.selectedProperty().not().or(runOnProperty.not()));
+        stopDebuggingButton.disableProperty().bind(debugModeToggleButton.selectedProperty().not().or(runOnProperty.not()));
+        resumeButton.disableProperty().bind(debugModeToggleButton.selectedProperty().not().or(runOnProperty.not()));
         cyclesConsumedLabel.textProperty().bind(Bindings.format("Cycles consumed: %d", cyclesConsumedProperty));
     }
 
@@ -82,6 +89,7 @@ public class ExecutionController {
 
     @FXML
     void runButtonAction(ActionEvent event) {
+        runOnProperty.setValue(true);
         variablesResultTableView.getItems().clear();
 
         Long[] inputs = new Long[inputsValues.size()];
@@ -127,7 +135,13 @@ public class ExecutionController {
 
     @FXML
     void resumeButtonAction(ActionEvent event) {
+        DebugDetails debugDetails = applicationController.debuggingResume();
+        entryObservableList.clear();
+        entryObservableList.addAll(debugDetails.context().variablesContext());
+        cyclesConsumedProperty.setValue(debugDetails.cycles());
+        applicationController.unhighlight();
 
+        runOnProperty.setValue(false);
     }
 
 
@@ -144,13 +158,16 @@ public class ExecutionController {
         cyclesConsumedProperty.setValue(debugDetails.cycles());
         applicationController.highlightRow(debugDetails.lineIndex());
         if (debugDetails.programEnded()) {
-            stepOverButton.setDisable(true);
+            applicationController.unhighlight();
+            debugModeToggleButton.setSelected(false);
+            runOnProperty.setValue(false);
         }
     }
 
     @FXML
     void stopDebuggingButtonAction(ActionEvent event) {
-
+        applicationController.unhighlight();
+        runOnProperty.setValue(false);
     }
 }
 

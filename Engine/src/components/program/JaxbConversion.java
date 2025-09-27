@@ -1,5 +1,8 @@
 package components.program;
 
+import components.argument.Argument;
+import components.argument.FunctionArgument;
+import components.executor.Context;
 import components.function.Function;
 import components.function.FunctionFactory;
 import components.instruction.Instruction;
@@ -15,10 +18,7 @@ import components.label.StandardLabel;
 import components.variable.StandardVariable;
 import components.variable.Variable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JaxbConversion {
 
@@ -42,6 +42,8 @@ public class JaxbConversion {
         for (Function function : functionFactory.getFunctions()) {
             program.addFunction(function);
         }
+
+        initializeArguments(functionFactory, program);
 
         return program;
     }
@@ -89,6 +91,53 @@ public class JaxbConversion {
                 else {
                     throw new RuntimeException("Function " + jumpEqualFunctionInstruction.getFunctionName() + " not found.");
                 }
+            }
+        }
+    }
+
+    private static void initializeArguments(FunctionFactory functionFactory, Program program) {
+        for (Instruction instruction : program.getInstructions()) {
+            if (instruction instanceof QuoteProgramInstruction quoteProgramInstruction) {
+                List<Argument> arguments = quoteProgramInstruction.getFunctionArguments();
+                for (Argument argument : arguments) {
+                    setArgumentFunction(functionFactory, argument);
+                }
+            }
+            else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
+                List<Argument> arguments = jumpEqualFunctionInstruction.getFunctionArguments();
+                for (Argument argument : arguments) {
+                    setArgumentFunction(functionFactory, argument);
+                }
+            }
+        }
+
+        for (Function function : functionFactory.getFunctions()) {
+            for (Instruction instruction : function.getInstructions()) {
+                if (instruction instanceof QuoteProgramInstruction quoteProgramInstruction) {
+                    List<Argument> arguments = quoteProgramInstruction.getFunctionArguments();
+                    for (Argument argument : arguments) {
+                        setArgumentFunction(functionFactory, argument);
+                    }
+                }
+                else if (instruction instanceof JumpEqualFunctionInstruction jumpEqualFunctionInstruction) {
+                    List<Argument> arguments = jumpEqualFunctionInstruction.getFunctionArguments();
+                    for (Argument argument : arguments) {
+                        setArgumentFunction(functionFactory, argument);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void setArgumentFunction(FunctionFactory functionFactory, Argument argument) {
+        if (argument instanceof FunctionArgument functionArgument) {
+            Function function = functionFactory.getFunction(functionArgument.getFunctionName());
+            if (function != null) {
+                functionArgument.setFunction(function);
+            }
+
+            for (Argument arg : functionArgument.getArguments()) {
+                setArgumentFunction(functionFactory, arg);
             }
         }
     }
@@ -156,14 +205,22 @@ public class JaxbConversion {
             }
             case "QUOTE" -> {
                 String functionName = argumentsList.getFirst().getValue();
-                List<Variable> functionsArguments = parseStringVariables(argumentsList.get(1).getValue());
-                return new QuoteProgramInstruction(instructionVariable, functionName, functionsArguments, instructionLabel);
+                List<String> functionStringArguments = splitArguments(argumentsList.get(1).getValue());
+                List<Argument> functionArguments = new ArrayList<>();
+                for (String stringArgument : functionStringArguments) {
+                    functionArguments.add(createArgument(stringArgument));
+                }
+                return new QuoteProgramInstruction(instructionVariable, functionName, functionArguments, instructionLabel);
             }
             case "JUMP_EQUAL_FUNCTION" -> {
                 Label JEFunctionLabel = SLabelToLabel(argumentsList.getFirst().getValue());
                 String functionName = argumentsList.get(1).getValue();
-                List<Variable> functionsArguments = parseStringVariables(argumentsList.get(2).getValue());
-                return new JumpEqualFunctionInstruction(instructionVariable, JEFunctionLabel, functionName, functionsArguments, instructionLabel);
+                List<String> functionStringArguments = splitArguments(argumentsList.get(2).getValue());
+                List<Argument> functionArguments = new ArrayList<>();
+                for (String stringArgument : functionStringArguments) {
+                    functionArguments.add(createArgument(stringArgument));
+                }
+                return new JumpEqualFunctionInstruction(instructionVariable, JEFunctionLabel, functionName, functionArguments, instructionLabel);
             }
             default -> throw new RuntimeException("Unknown instruction: " + sInstruction.getName());
         }
@@ -216,6 +273,45 @@ public class JaxbConversion {
         }
 
         return variables;
+    }
+
+    public static Argument createArgument(String stringArgument) {
+        if (!stringArgument.isEmpty() && stringArgument.charAt(0) == '(' && stringArgument.charAt(stringArgument.length() - 1) == ')') {
+            List<String> argumentsList = splitArguments(stringArgument.substring(1, stringArgument.length() - 1));
+            List<Argument> arguments = new ArrayList<>();
+            for (int i = 1; i < argumentsList.size(); i++) {
+                arguments.add(createArgument(argumentsList.get(i)));
+            }
+
+            return new FunctionArgument(argumentsList.getFirst(), arguments);
+        }
+
+        return SVariableToVariable(stringArgument);
+    }
+
+    private static List<String> splitArguments(String stringArgument) {
+        List<String> arguments = new ArrayList<>();
+        StringBuilder currentArgument = new StringBuilder();
+        int parenthesisCounter = 0;
+        for (int i = 0; i < stringArgument.length(); i++) {
+            if (stringArgument.charAt(i) == '(') {
+                parenthesisCounter++;
+            }
+            else if (stringArgument.charAt(i) == ')') {
+                parenthesisCounter--;
+            }
+
+            if (stringArgument.charAt(i) == ',' && parenthesisCounter == 0) {
+                arguments.add(currentArgument.toString());
+                currentArgument = new StringBuilder();
+            }
+            else {
+                currentArgument.append(stringArgument.charAt(i));
+            }
+        }
+        arguments.add(currentArgument.toString());
+
+        return arguments;
     }
 }
 

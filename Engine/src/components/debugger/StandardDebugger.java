@@ -89,4 +89,14 @@ public class StandardDebugger implements Debugger {
     public DebugDetails stepBackward() {
         return null;
     }
+
+    @Override
+    public DebugDetails resume() {
+        DebugDetails debugDetails;
+        do {
+            debugDetails = stepForward();
+        } while (!debugDetails.programEnded());
+
+        return debugDetails;
+    }
 }

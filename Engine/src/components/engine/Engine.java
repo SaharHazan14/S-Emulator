@@ -20,4 +20,6 @@ public interface Engine extends Serializable {
     boolean isRunning();
     DebugDetails debugProgram(int expansionDegree, Long... input);
     DebugDetails debugStepForward();
+    DebugDetails debugResume();
+    public void setCurrentProgram(String programName);
 }

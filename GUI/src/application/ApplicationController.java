@@ -69,12 +69,19 @@ public class ApplicationController {
     public void loadProgram(File programFile) {
         engine.loadProgramFromFile(programFile);
         programViewComponentController.loadNewProgram(engine.getProgramDetails());
+
         showProgramStatistics();
     }
 
     public void expandProgram(int expansionDegree) {
         programViewComponentController.updateProgram(engine.expandProgram(expansionDegree), expansionDegree);
         programDegree = expansionDegree;
+    }
+
+    public void setCurrentProgram(String programName) {
+        engine.setCurrentProgram(programName);
+        programViewComponentController.displayNewProgram(engine.getProgramDetails());
+        showProgramStatistics();
     }
 
     public void handleRowDoubleClick(InstructionDetails instruction) {
@@ -100,8 +107,16 @@ public class ApplicationController {
         return engine.debugStepForward();
     }
 
+    public DebugDetails debuggingResume() {
+        return engine.debugResume();
+    }
+
     public void highlightRow(int index) {
         programViewComponentController.highlightProgramInstruction(index);
+    }
+
+    public void unhighlight() {
+        programViewComponentController.unhighlightInstructions();
     }
 
     public void showProgramStatistics() {

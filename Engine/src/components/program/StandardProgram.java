@@ -1,5 +1,6 @@
 package components.program;
 
+import components.argument.FunctionArgument;
 import components.function.Function;
 import components.instruction.Instruction;
 import components.instruction.InstructionSemantic;
@@ -9,10 +10,7 @@ import components.label.Label;
 import components.variable.FreeWorkVariableGenerator;
 import components.variable.StandardVariable;
 import components.variable.Variable;
-import dtos.InstructionDetails;
-import dtos.LabelDetails;
-import dtos.ProgramDetails;
-import dtos.VariableDetails;
+import dtos.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -194,12 +192,22 @@ public class StandardProgram implements Program {
             instructions.add(instruction.getInstructionDetails());
         }
 
+        List<FunctionDetails> programFunctions = new ArrayList<>();
+        for (Function programFunction : functions) {
+            programFunctions.add(new FunctionDetails(programFunction.getUserString(), programFunction.getProgramDetails()));
+        }
+
         return new ProgramDetails(name, inputVariables, workVariables, labels, instructions,
-                calculateMaxDegree(), calculateBasicInstructionsNumber());
+                calculateMaxDegree(), calculateBasicInstructionsNumber(), programFunctions);
     }
 
     @Override
     public void addFunction(Function function) {
         functions.add(function);
+    }
+
+    @Override
+    public List<Function> getFunctions() {
+        return functions;
     }
 }

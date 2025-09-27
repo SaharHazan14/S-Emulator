@@ -1,5 +1,6 @@
 package components.instruction.implementations.synthetic;
 
+import components.argument.Argument;
 import components.executor.Context;
 import components.function.Function;
 import components.instruction.AbstractInstruction;
@@ -18,16 +19,16 @@ import java.util.List;
 public class JumpEqualFunctionInstruction extends AbstractInstruction {
     private final Label JEFunctionLabel;
     private final String functionName;
-    private final List<Variable> functionArguments;
+    private final List<Argument> functionArguments;
 
     private int functionCyclesNumber;
     private Function function;
 
-    public JumpEqualFunctionInstruction(Variable variable, Label JEFunctionLabel, String functionName, List<Variable> functionArguments) {
+    public JumpEqualFunctionInstruction(Variable variable, Label JEFunctionLabel, String functionName, List<Argument> functionArguments) {
         this(variable, JEFunctionLabel, functionName, functionArguments, FixedLabel.EMPTY);
     }
 
-    public JumpEqualFunctionInstruction(Variable variable, Label JEFunctionLabel, String functionName, List<Variable> functionArguments, Label label) {
+    public JumpEqualFunctionInstruction(Variable variable, Label JEFunctionLabel, String functionName, List<Argument> functionArguments, Label label) {
         super(InstructionSemantic.JUMP_EQUAL_FUNCTION, variable, label);
         this.JEFunctionLabel = JEFunctionLabel;
         this.functionName = functionName;
@@ -46,7 +47,7 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction {
         return function;
     }
 
-    public List<Variable> getFunctionArguments() {
+    public List<Argument> getFunctionArguments() {
         return functionArguments;
     }
 
@@ -64,11 +65,11 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction {
         int i;
         String argument;
         for (i = 0; i < functionArguments.size() - 1; i++) {
-            argument = functionArguments.get(i).getStringVariable();
+            argument = functionArguments.get(i).getStringArgument();
             functionString.append(argument).append(",");
         }
         if (i > 0) {
-            argument = functionArguments.get(i).getStringVariable();
+            argument = functionArguments.get(i).getStringArgument();
             functionString.append(argument);
         }
         functionString.append(")");
