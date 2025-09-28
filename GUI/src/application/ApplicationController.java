@@ -123,4 +123,12 @@ public class ApplicationController {
         statisticsComponentController.showProgramHistory(engine.getStatistics());
     }
 
+    public void insertInputs(List<String> inputs) {
+        executionComponentController.insertInputs(inputs);
+    }
+
+    public void setNewRun() {
+        executionComponentController.setNewRun();
+    }
+
 }

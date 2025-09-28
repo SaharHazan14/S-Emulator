@@ -42,7 +42,7 @@ public class ExecutionController {
     @FXML
     private TableView<Map.Entry<VariableDetails, Long>> variablesResultTableView;
 
-    private List<TextField> inputsValues = new ArrayList<>();
+    private List<TextField> inputsValues;
 
     private final ObservableList<Map.Entry<VariableDetails, Long>> entryObservableList = FXCollections.observableArrayList();
 
@@ -88,6 +88,15 @@ public class ExecutionController {
     }
 
     @FXML
+    void newRunButtonAction(ActionEvent event) {
+        variablesResultTableView.getItems().clear();
+        for (TextField textField : inputsValues) {
+            textField.clear();
+        }
+        cyclesConsumedProperty.setValue(0);
+    }
+
+    @FXML
     void runButtonAction(ActionEvent event) {
         runOnProperty.setValue(true);
         variablesResultTableView.getItems().clear();
@@ -120,6 +129,7 @@ public class ExecutionController {
         VBox container = new VBox(10);
         container.setPadding(new Insets(10));
 
+        inputsValues = new ArrayList<>();
         for (VariableDetails variable : variables) {
             Label label = new Label(variable.variable());
             TextField textField = new TextField();
@@ -142,6 +152,7 @@ public class ExecutionController {
         applicationController.unhighlight();
 
         runOnProperty.setValue(false);
+        variablesResultTableView.getSelectionModel().clearSelection();
     }
 
 
@@ -157,10 +168,18 @@ public class ExecutionController {
         entryObservableList.addAll(debugDetails.context().variablesContext());
         cyclesConsumedProperty.setValue(debugDetails.cycles());
         applicationController.highlightRow(debugDetails.lineIndex());
+
+        for (int i = 0; i < variablesResultTableView.getItems().size(); i++) {
+            if (variablesResultTableView.getItems().get(i).getKey().equals(debugDetails.changedVariable())) {
+                variablesResultTableView.getSelectionModel().select(i);
+            }
+        }
+
         if (debugDetails.programEnded()) {
             applicationController.unhighlight();
             debugModeToggleButton.setSelected(false);
             runOnProperty.setValue(false);
+            variablesResultTableView.getSelectionModel().clearSelection();
         }
     }
 
@@ -168,6 +187,17 @@ public class ExecutionController {
     void stopDebuggingButtonAction(ActionEvent event) {
         applicationController.unhighlight();
         runOnProperty.setValue(false);
+        variablesResultTableView.getSelectionModel().clearSelection();
+    }
+
+    public void insertInputs(List<String> inputs) {
+        for (int i = 0; i < inputsValues.size(); i++) {
+            inputsValues.get(i).setText(inputs.get(i));
+        }
+    }
+
+    public void setNewRun() {
+        newRunButtonAction(null);
     }
 }
 

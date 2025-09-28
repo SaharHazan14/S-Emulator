@@ -106,7 +106,7 @@ public abstract class AbstractInstruction implements Instruction {
             ancientInstructions.add(currentInstruction.getInstructionDetails());
         }
 
-        return new InstructionDetails(instructionNumber, instructionSemantic.getInstructionType(),
+        return new InstructionDetails(instructionNumber, instructionSemantic,
                 label.getLabelDetails(), getStringInstruction(), getCyclesNumber(), ancientInstructions);
     }
 }

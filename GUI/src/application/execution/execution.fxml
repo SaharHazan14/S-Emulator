@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="400.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.execution.ExecutionController">
+<VBox prefWidth="450.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.execution.ExecutionController">
    <children>
       <GridPane hgap="5.0" vgap="5.0">
         <columnConstraints>
@@ -31,7 +31,7 @@
         </rowConstraints>
          <children>
             <Button alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#runButtonAction" text="Run" GridPane.columnIndex="3" GridPane.halignment="RIGHT" />
-            <HBox alignment="CENTER_LEFT" prefWidth="227.0" spacing="5.0" GridPane.columnSpan="4" GridPane.rowIndex="1">
+            <HBox alignment="CENTER_LEFT" prefWidth="227.0" spacing="5.0" GridPane.columnSpan="3" GridPane.rowIndex="1">
                <children>
                   <Button fx:id="stepOverButton" mnemonicParsing="false" onAction="#stepOverButtonAction" text="Step Over" />
                   <Button fx:id="stepBackButton" mnemonicParsing="false" onAction="#stepBackButtonAction" text="Step Back" />
@@ -54,6 +54,7 @@
                </columnResizePolicy>
             </TableView>
             <Label fx:id="cyclesConsumedLabel" text="Label" GridPane.columnSpan="2" GridPane.rowIndex="4" />
+            <Button mnemonicParsing="false" onAction="#newRunButtonAction" text="New Run" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

@@ -1,14 +1,19 @@
 package application.fileloader;
 
 import application.ApplicationController;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.stage.FileChooser;
 
 import java.io.File;
+
+import static java.lang.Thread.sleep;
 
 public class FileLoaderController {
 
@@ -23,7 +28,7 @@ public class FileLoaderController {
     private SimpleStringProperty fileLoadingStatusProperty;
 
     @FXML
-    private ProgressIndicator loadFileTaskProgressIndicator;
+    private ProgressBar loadFileTaskProgressBar;
 
     public FileLoaderController()
     {
@@ -53,12 +58,36 @@ public class FileLoaderController {
 
         String absolutePath = selectedFile.getAbsolutePath();
         currentPathProperty.set(absolutePath);
-        try {
-            applicationController.loadProgram(selectedFile);
-            fileLoadingStatusProperty.set("File has been loaded successfully.");
-        } catch (RuntimeException e) {
-            fileLoadingStatusProperty.set("File couldn't be loaded: " + e.getCause().getMessage() + ".");
-        }
+        loadFileTask(selectedFile);
     }
 
+    void loadFileTask(File file) {
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() throws Exception {
+                int steps = 100;
+                for (int i = 1; i <= steps; i++) {
+                    sleep(30); // simulate work
+                    updateProgress(i, steps);
+                    updateMessage("Step " + i + " of " + steps);
+                }
+
+                return null;
+            }
+        };
+
+        loadFileTaskProgressBar.progressProperty().bind(task.progressProperty());
+        task.setOnSucceeded(event -> {
+            try {
+                applicationController.loadProgram(file);
+                fileLoadingStatusProperty.set("File has been loaded successfully.");
+            } catch (RuntimeException e) {
+                fileLoadingStatusProperty.set("File couldn't be loaded: " + e.getCause().getMessage() + ".");
+            }
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
 }

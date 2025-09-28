@@ -4,15 +4,17 @@ import application.ApplicationController;
 import application.statistics.runtable.RunTableController;
 import dtos.RunHistoryDetails;
 import dtos.VariableDetails;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +32,8 @@ public class StatisticsController {
 
     @FXML
     private Button rerunButton;
+
+    private final ObservableList<Map.Entry<VariableDetails, Long>> entryObservableList = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
@@ -57,8 +61,11 @@ public class StatisticsController {
             Stage popup = new Stage();
             String title = "Run " + runHistoryDetails.runNumber() + " variables context";
             popup.setTitle(title);
-            TableView<Map.Entry<VariableDetails, Long>> variablesTableView = FXMLLoader.load(getClass().getResource("variablesTable.fxml"));
-            //
+            TableView<Map.Entry<VariableDetails, Long>> variablesTableView = FXMLLoader.load(getClass().getResource("variablestable/variablesTable.fxml"));
+            variablesTableView.setItems(entryObservableList);
+            entryObservableList.clear();
+            entryObservableList.addAll(runHistoryDetails.context().variablesContext());
+
             Scene scene = new Scene(variablesTableView);
             popup.setScene(scene);
             popup.show();
@@ -69,6 +76,14 @@ public class StatisticsController {
 
     @FXML
     void rerunButtonAction(ActionEvent event) {
+        RunHistoryDetails runHistoryDetails = runHistoryComponent.getSelectionModel().getSelectedItem();
+        applicationController.expandProgram(runHistoryDetails.expansionDegree());
+        applicationController.setNewRun();
+        List<String> inputs = new ArrayList<>();
+        for (Long input : runHistoryDetails.inputs()) {
+            inputs.add(input.toString());
+        }
 
+        applicationController.insertInputs(inputs);
     }
 }

@@ -62,7 +62,9 @@ public class QuoteProgramInstruction extends AbstractInstruction {
 
         StringBuilder arguments = new StringBuilder();
         for (Argument argument : functionArguments) {
-            arguments.append(",").append(argument.getStringArgument());
+            if (argument != Variable.EMPTY) {
+                arguments.append(",").append(argument.getStringArgument());
+            }
         }
 
         return String.format("%s <- (%s%s)",  variable, function.getUserString(), arguments);

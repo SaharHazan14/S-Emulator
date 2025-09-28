@@ -1,6 +1,7 @@
 package application.programview.instructionstable;
 
 import application.programview.ProgramViewController;
+import components.instruction.InstructionSemantic;
 import dtos.InstructionDetails;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,7 +22,7 @@ public class InstructionsTableController {
     private TableView<InstructionDetails> instructionsTableView;
 
     @FXML
-    private TableColumn<InstructionDetails, Integer> cyclesTableColumn;
+    private TableColumn<InstructionDetails, String> cyclesTableColumn;
 
     @FXML
     private TableColumn<InstructionDetails, String> instructionTableColumn;
@@ -42,13 +43,20 @@ public class InstructionsTableController {
         numberTableColumn.setCellValueFactory(cellData ->
                 new SimpleIntegerProperty(cellData.getValue().ordinalNumber()).asObject());
         typeTableColumn.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().type().name().toLowerCase()));
+                new SimpleStringProperty(String.valueOf(cellData.getValue().type().getInstructionTypeChar())));
         labelTableColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().label().label()));
         instructionTableColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().instructionContent()));
-        cyclesTableColumn.setCellValueFactory(cellData ->
-                new SimpleIntegerProperty(cellData.getValue().cycles()).asObject());
+        cyclesTableColumn.setCellValueFactory(cellData -> {
+            String str = String.valueOf(cellData.getValue().type().getCyclesNumber());
+            if (cellData.getValue().type() == InstructionSemantic.JUMP_EQUAL_FUNCTION ||
+            cellData.getValue().type() == InstructionSemantic.QUOTE) {
+                str = str + "+";
+            }
+            return new SimpleStringProperty(str);
+        });
+
         instructionsTableView.setItems(instructionsList);
     }
 

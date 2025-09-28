@@ -4,7 +4,6 @@ import components.debugger.Debugger;
 import components.debugger.StandardDebugger;
 import components.executor.ProgramExecutor;
 import components.function.Function;
-import components.jaxb.generated.SFunction;
 import components.jaxb.generated.SInstruction;
 import components.jaxb.generated.SInstructionArgument;
 import components.jaxb.generated.SProgram;
@@ -24,12 +23,11 @@ public class StandardEngine implements Engine {
 
     private Program program;
     private boolean programLoaded = false;
-    private int runNumber;
-    List<RunHistoryDetails> runHistoryDetails = new ArrayList<>();
     private Debugger debugger;
     private boolean debugMode = false;
 
     private Program currentProgram;
+    private Map<Program, List<RunHistoryDetails>> runHistoryDetailsMap;
 
     // 1. Load File
     @Override
@@ -40,8 +38,7 @@ public class StandardEngine implements Engine {
             program = JaxbConversion.SProgramToProgram(sProgram);
             currentProgram = program;
             programLoaded = true;
-            runNumber = 0;
-            runHistoryDetails = new ArrayList<>();
+            runHistoryDetailsMap = new HashMap<>();
         } catch (RuntimeException e) {
             throw new RuntimeException(e);
         }
@@ -130,8 +127,21 @@ public class StandardEngine implements Engine {
 
         ProgramExecutor programExecutor = new ProgramExecutor(runningProgram);
         Long y = programExecutor.run(input);
+        int runNumber;
 
-        runHistoryDetails.add(new RunHistoryDetails(++runNumber, expansionDegree, List.of(input), programExecutor.getVariablesContext().getContextDetails(), programExecutor.getCyclesNumber()));
+        List<RunHistoryDetails> currentList = runHistoryDetailsMap.get(currentProgram);
+        if (currentList == null) {
+            currentList = new ArrayList<>();
+            runNumber = 0;
+        }
+        else {
+            runNumber = currentList.size();
+        }
+
+        RunHistoryDetails currentRunHistory = new RunHistoryDetails(++runNumber, expansionDegree,
+                List.of(input), programExecutor.getVariablesContext().getContextDetails(), programExecutor.getCyclesNumber());
+        currentList.add(currentRunHistory);
+        runHistoryDetailsMap.put(currentProgram, currentList);
 
         return new ExecutionDetails(runningProgram.getProgramDetails(), programExecutor.getVariablesContext().getContextDetails(), programExecutor.getCyclesNumber());
     }
@@ -139,12 +149,17 @@ public class StandardEngine implements Engine {
     // 5. Show Statistics
     @Override
     public List<RunHistoryDetails> getStatistics() {
+        List<RunHistoryDetails> runHistoryDetails = runHistoryDetailsMap.get(currentProgram);
+        if (runHistoryDetails == null) {
+            return new ArrayList<>();
+        }
+
         return runHistoryDetails;
     }
 
     @Override
     public boolean isRunning() {
-        return runNumber > 0;
+        return true;
     }
 
     @Override

@@ -10,6 +10,7 @@ import components.variable.Variable;
 import dtos.ContextDetails;
 import dtos.DebugDetails;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,7 +60,7 @@ public class StandardDebugger implements Debugger {
             }
         }
 
-        return new DebugDetails(context.getContextDetails(),  cyclesNumber, lineIndex, false);
+        return new DebugDetails(context.getContextDetails(),  cyclesNumber, lineIndex, false, null);
     }
 
     @Override
@@ -82,7 +83,7 @@ public class StandardDebugger implements Debugger {
             programEnded = true;
         }
 
-        return new DebugDetails(context.getContextDetails(), cyclesNumber, lineIndex, programEnded);
+        return new DebugDetails(context.getContextDetails(), cyclesNumber, lineIndex, programEnded, currentInstruction.getVariable().getVariableDetails());
     }
 
     @Override

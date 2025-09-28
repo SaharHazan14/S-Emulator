@@ -126,11 +126,6 @@ public class JumpEqualFunctionInstruction extends AbstractInstruction {
     }
 
     @Override
-    public int getCyclesNumber() {
-        return super.getCyclesNumber() + functionCyclesNumber;
-    }
-
-    @Override
     public int getDegree() {
         return super.getDegree() + function.calculateMaxDegree();
     }

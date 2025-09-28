@@ -1,4 +1,4 @@
-package application.statistics;
+package application.statistics.variablestable;
 
 import dtos.VariableDetails;
 import javafx.beans.property.SimpleObjectProperty;
