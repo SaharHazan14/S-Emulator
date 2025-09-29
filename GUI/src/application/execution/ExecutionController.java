@@ -63,9 +63,12 @@ public class ExecutionController {
 
     private SimpleBooleanProperty runOnProperty;
 
+    private SimpleBooleanProperty debugHasBackward;
+
     public ExecutionController() {
         cyclesConsumedProperty = new SimpleIntegerProperty(0);
         runOnProperty = new SimpleBooleanProperty(false);
+        debugHasBackward = new SimpleBooleanProperty(false);
     }
 
     @FXML
@@ -81,6 +84,7 @@ public class ExecutionController {
         stopDebuggingButton.disableProperty().bind(debugModeToggleButton.selectedProperty().not().or(runOnProperty.not()));
         resumeButton.disableProperty().bind(debugModeToggleButton.selectedProperty().not().or(runOnProperty.not()));
         cyclesConsumedLabel.textProperty().bind(Bindings.format("Cycles consumed: %d", cyclesConsumedProperty));
+        stepBackButton.disableProperty().bind(debugHasBackward.not().or(runOnProperty.not()));
     }
 
     public void setApplicationController(ApplicationController applicationController) {
@@ -158,7 +162,18 @@ public class ExecutionController {
 
     @FXML
     void stepBackButtonAction(ActionEvent event) {
+        DebugDetails debugDetails = applicationController.debuggingStepBackward();
+        entryObservableList.clear();
+        entryObservableList.addAll(debugDetails.context().variablesContext());
+        cyclesConsumedProperty.setValue(debugDetails.cycles());
+        applicationController.highlightRow(debugDetails.lineIndex());
+        debugHasBackward.setValue(debugDetails.hasBackward());
 
+        for (int i = 0; i < variablesResultTableView.getItems().size(); i++) {
+            if (variablesResultTableView.getItems().get(i).getKey().equals(debugDetails.changedVariable())) {
+                variablesResultTableView.getSelectionModel().select(i);
+            }
+        }
     }
 
     @FXML
@@ -168,6 +183,7 @@ public class ExecutionController {
         entryObservableList.addAll(debugDetails.context().variablesContext());
         cyclesConsumedProperty.setValue(debugDetails.cycles());
         applicationController.highlightRow(debugDetails.lineIndex());
+        debugHasBackward.setValue(debugDetails.hasBackward());
 
         for (int i = 0; i < variablesResultTableView.getItems().size(); i++) {
             if (variablesResultTableView.getItems().get(i).getKey().equals(debugDetails.changedVariable())) {

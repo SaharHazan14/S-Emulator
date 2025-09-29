@@ -1,6 +1,5 @@
 package components.executor;
 
-import components.variable.StandardVariable;
 import components.variable.Variable;
 import dtos.ContextDetails;
 import dtos.VariableDetails;

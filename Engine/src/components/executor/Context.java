@@ -1,9 +1,7 @@
 package components.executor;
 
-import com.sun.tools.rngdatatype.ValidationContext;
 import components.variable.Variable;
 import dtos.ContextDetails;
-import dtos.VariableDetails;
 
 import java.util.List;
 import java.util.Map;

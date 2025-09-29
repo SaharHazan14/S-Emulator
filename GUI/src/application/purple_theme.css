@@ -1,0 +1,92 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF, #F5F5F5);
+    -fx-font-family: "Segoe UI", sans-serif;
+}
+
+/* Labels */
+.label {
+    -fx-text-fill: #333333;
+    -fx-font-size: 16px;
+    -fx-font-style: italic;
+}
+
+/* Buttons */
+.button {
+    -fx-background-color: #6200EE;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-padding: 6 14 6 14;
+}
+.button:hover {
+    -fx-background-color: #3700B3;
+}
+.button:disabled {
+    -fx-background-color: #D1C4E9;
+    -fx-text-fill: #9E9E9E;
+}
+
+/* Toggle Buttons */
+.toggle-button {
+    -fx-background-color: #E0E0E0;
+    -fx-text-fill: #333333;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+.toggle-button:hover {
+    -fx-border-color: #6200EE;
+}
+.toggle-button:selected {
+    -fx-background-color: #03DAC6;
+    -fx-text-fill: #212121;
+}
+
+/* TableView */
+.table-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+    -fx-table-cell-border-color: #E0E0E0;
+}
+.table-row-cell:odd {
+    -fx-background-color: #FAFAFA;
+}
+.table-row-cell:selected {
+    -fx-background-color: #D1C4E9;
+    -fx-text-fill: #212121;
+    -fx-font-weight: bold;
+}
+
+/* Progress Bar */
+.progress-bar {
+    -fx-accent: linear-gradient(to right, #6200EE, #BB86FC);
+    -fx-control-inner-background: #E0E0E0;
+    -fx-background-radius: 20;
+    -fx-padding: 2;
+}
+
+/* ComboBox */
+.combo-box {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CCCCCC;
+    -fx-border-radius: 20;
+    -fx-background-radius: 20;
+    -fx-padding: 4 10 4 10;
+    -fx-pref-height: 28px;
+    -fx-mark-color: #6200EE;
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+.combo-box:hover {
+    -fx-border-color: #6200EE;
+}
+.combo-box .list-cell {
+    -fx-text-fill: #333333;
+    -fx-font-size: 14px;
+}
+.combo-box-popup .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #E0E0E0;
+}
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #EDE7F6;
+}

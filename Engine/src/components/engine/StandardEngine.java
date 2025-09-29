@@ -190,6 +190,17 @@ public class StandardEngine implements Engine {
     }
 
     @Override
+    public DebugDetails debugStepBackward() {
+        if (debugMode) {
+            DebugDetails debugDetails = debugger.stepBackward();
+
+            return debugDetails;
+        }
+
+        return null;
+    }
+
+    @Override
     public DebugDetails debugResume() {
         if (debugMode) {
             DebugDetails debugDetails = debugger.resume();

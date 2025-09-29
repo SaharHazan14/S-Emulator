@@ -7,7 +7,6 @@ import components.label.FixedLabel;
 import components.label.Label;
 import components.program.Program;
 import components.variable.Variable;
-import dtos.ContextDetails;
 import dtos.DebugDetails;
 
 import java.util.ArrayList;
@@ -21,9 +20,12 @@ public class StandardDebugger implements Debugger {
     private int cyclesNumber;
     private int lineIndex;
     private Map<Label, Integer> labelToIndex;
+    private List<DebugDetails> steps;
+    private int stepPointer;
 
     public StandardDebugger(Program program) {
         this.program = program;
+        steps = new ArrayList<>();
     }
 
     @Override
@@ -60,35 +62,48 @@ public class StandardDebugger implements Debugger {
             }
         }
 
-        return new DebugDetails(context.getContextDetails(),  cyclesNumber, lineIndex, false, null);
+        DebugDetails debugDetails = new DebugDetails(context.getContextDetails(),  cyclesNumber, lineIndex, false, false, null);
+        steps.add(debugDetails);
+
+        return debugDetails;
     }
 
     @Override
     public DebugDetails stepForward() {
-        boolean programEnded = false;
-        Instruction currentInstruction = program.getInstructions().get(lineIndex);
-        Label nextLabel = currentInstruction.execute(context);
-        cyclesNumber += currentInstruction.getCyclesNumber();
-        if (nextLabel == FixedLabel.EXIT) {
-            lineIndex = program.getInstructions().size();
-        }
-        else if (nextLabel == FixedLabel.EMPTY) {
-            lineIndex++;
+        DebugDetails debugDetails;
+
+        if (stepPointer >= steps.size() - 1) {
+            boolean programEnded = false;
+            Instruction currentInstruction = program.getInstructions().get(lineIndex);
+            Label nextLabel = currentInstruction.execute(context);
+            cyclesNumber += currentInstruction.getCyclesNumber();
+            if (nextLabel == FixedLabel.EXIT) {
+                lineIndex = program.getInstructions().size();
+            } else if (nextLabel == FixedLabel.EMPTY) {
+                lineIndex++;
+            } else {
+                lineIndex = labelToIndex.get(nextLabel);
+            }
+
+            if (lineIndex >= program.getInstructions().size()) {
+                programEnded = true;
+            }
+
+            debugDetails = new DebugDetails(context.getContextDetails(), cyclesNumber, lineIndex, programEnded, true, currentInstruction.getVariable().getVariableDetails());
+            steps.add(debugDetails);
         }
         else {
-            lineIndex = labelToIndex.get(nextLabel);
+            debugDetails = steps.get(stepPointer + 1);
         }
 
-        if (lineIndex >= program.getInstructions().size()) {
-            programEnded = true;
-        }
+        stepPointer++;
 
-        return new DebugDetails(context.getContextDetails(), cyclesNumber, lineIndex, programEnded, currentInstruction.getVariable().getVariableDetails());
+        return debugDetails;
     }
 
     @Override
     public DebugDetails stepBackward() {
-        return null;
+        return steps.get(--stepPointer);
     }
 
     @Override

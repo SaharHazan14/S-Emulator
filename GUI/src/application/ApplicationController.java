@@ -107,6 +107,10 @@ public class ApplicationController {
         return engine.debugStepForward();
     }
 
+    public DebugDetails debuggingStepBackward() {
+        return engine.debugStepBackward();
+    }
+
     public DebugDetails debuggingResume() {
         return engine.debugResume();
     }
