@@ -10,10 +10,10 @@
    <children>
       <HBox alignment="CENTER" spacing="10.0">
          <children>
-            <ComboBox fx:id="chooseProgramComboBox" onAction="#chooseProgramComboBoxAction" prefWidth="110.0" />
-            <ComboBox fx:id="selectedDegreeComboBox" onAction="#selectedDegreeComboBoxAction" prefWidth="110.0" />
+            <ComboBox fx:id="chooseProgramComboBox" onAction="#chooseProgramComboBoxAction" prefWidth="110.0" promptText="Program" />
+            <ComboBox fx:id="selectedDegreeComboBox" onAction="#selectedDegreeComboBoxAction" prefWidth="110.0" promptText="Degree" />
             <Label fx:id="currentDegreeLabel" alignment="CENTER" prefHeight="17.0" prefWidth="42.0" text="Label" />
-            <ComboBox fx:id="highlightComboBox" onAction="#highlightComboBoxAction" prefWidth="110.0" />
+            <ComboBox fx:id="highlightComboBox" onAction="#highlightComboBoxAction" prefWidth="110.0" promptText="Highlight" />
          </children>
       </HBox>
       <fx:include fx:id="programInstructionsComponent" source="instructionstable/instructionsTable.fxml" />

@@ -3,6 +3,9 @@ package application;
 import application.execution.ExecutionController;
 import application.fileloader.FileLoaderController;
 import application.programview.ProgramViewController;
+import application.theme.AppTheme;
+import application.theme.ThemeManager;
+import application.settings.SettingsController;
 import application.statistics.StatisticsController;
 import components.engine.Engine;
 import components.engine.StandardEngine;
@@ -17,6 +20,8 @@ import java.util.List;
 public class ApplicationController {
 
     private final Engine engine = new StandardEngine();
+
+    private ThemeManager themeManager;
 
     @FXML
     private VBox fileLoaderComponent;
@@ -42,6 +47,12 @@ public class ApplicationController {
     @FXML
     private StatisticsController statisticsComponentController;
 
+    @FXML
+    private VBox settingsComponent;
+
+    @FXML
+    private SettingsController settingsComponentController;
+
     private int programDegree;
 
     public ApplicationController() {
@@ -64,11 +75,19 @@ public class ApplicationController {
         if (statisticsComponentController != null) {
             statisticsComponentController.setApplicationController(this);
         }
+
+        if (settingsComponentController != null) {
+            settingsComponentController.setApplicationController(this);
+        }
+    }
+
+    public void setThemeManager(ThemeManager themeManager) {
+        this.themeManager = themeManager;
     }
 
     public void loadProgram(File programFile) {
         engine.loadProgramFromFile(programFile);
-        programViewComponentController.loadNewProgram(engine.getProgramDetails());
+        programViewComponentController.loadNewProgram(engine.getProgramDetails(), true);
 
         showProgramStatistics();
     }
@@ -80,7 +99,8 @@ public class ApplicationController {
 
     public void setCurrentProgram(String programName) {
         engine.setCurrentProgram(programName);
-        programViewComponentController.displayNewProgram(engine.getProgramDetails());
+        //programViewComponentController.displayNewProgram(engine.getProgramDetails());
+        programViewComponentController.loadNewProgram(engine.getProgramDetails(), false);
         showProgramStatistics();
     }
 
@@ -135,4 +155,7 @@ public class ApplicationController {
         executionComponentController.setNewRun();
     }
 
+    public void setAppTheme(AppTheme appTheme) {
+        themeManager.applyTheme(appTheme);
+    }
 }

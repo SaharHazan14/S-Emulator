@@ -1,9 +1,11 @@
+/*.root {*/
+/*    -fx-background-image: url("resources/light_green_background.jpg");*/
+/*    -fx-background-repeat: no-repeat;*/
+/*    -fx-background-size: cover;*/
+/*}*/
 .root {
-    -fx-background-image: url("resources/light_green_background.jpg");
-    -fx-background-repeat: no-repeat;
-    -fx-background-size: cover;
+    -fx-background-color: linear-gradient(to bottom, #FFFFFF, #4caf50);
 }
-
 
 .label {
     -fx-text-fill: #212121;

@@ -80,10 +80,6 @@ public class ProgramViewController {
             return row;
         });
 
-        selectedDegreeComboBox.setPromptText("Degree");
-        highlightComboBox.setPromptText("Highlight");
-        chooseProgramComboBox.setPromptText("Program");
-
         currentDegreeProperty.setValue(0);
         currentDegreeLabel.textProperty().bind(Bindings.format("%d / %d", currentDegreeProperty,  maxDegreeProperty));
 
@@ -118,12 +114,13 @@ public class ProgramViewController {
         }
     }
 
-    public void loadNewProgram(ProgramDetails programDetails) {
+    public void loadNewProgram(ProgramDetails programDetails, boolean isNewFile) {
         programInstructionsComponentController.initializeTable(programDetails.instructions());
-
         initializeSelectedDegreeComboBox(programDetails.maxDegree());
         initializeHighlightComboBox(programDetails);
-        initializeChooseProgramComboBox(programDetails);
+        if (isNewFile) {
+            initializeChooseProgramComboBox(programDetails);
+        }
         currentDegreeProperty.set(0);
         maxDegreeProperty.set(programDetails.maxDegree());
         basicInstructionsProperty.setValue(programDetails.basicInstructionsNumber());
@@ -146,7 +143,6 @@ public class ProgramViewController {
     }
 
     private void initializeSelectedDegreeComboBox(int max) {
-        selectedDegreeComboBox.setPromptText("Degree");
         selectedDegreeComboBox.getItems().clear();
         for (int i = 0; i <= max; i++) {
             selectedDegreeComboBox.getItems().add(i);
@@ -154,7 +150,6 @@ public class ProgramViewController {
     }
 
     private void initializeHighlightComboBox(ProgramDetails programDetails) {
-        highlightComboBox.setPromptText("Highlight");
         highlightComboBox.getItems().clear();
 
         for (LabelDetails label : programDetails.labels()) {
@@ -172,9 +167,9 @@ public class ProgramViewController {
     }
 
     private void initializeChooseProgramComboBox(ProgramDetails programDetails) {
-        chooseProgramComboBox.setPromptText("Program");
         chooseProgramComboBox.getItems().clear();
 
+        chooseProgramComboBox.setPromptText(programDetails.name());
         chooseProgramComboBox.getItems().add(programDetails.name());
         for (FunctionDetails function: programDetails.functions()) {
             chooseProgramComboBox.getItems().add(function.userString());
